@@ -61,28 +61,27 @@ def upgrade() -> None:
     op.add_column("projects", sa.Column("requirement_version", sa.Integer(), nullable=False, server_default="1"))
     op.add_column("projects", sa.Column("schema_context_version", sa.Integer(), nullable=False, server_default="1"))
     op.create_index("ix_projects_erp_profile_version_id", "projects", ["erp_profile_version_id"])
-    op.create_foreign_key("fk_projects_erp_profile_version", "projects", "erp_profile_versions", ["erp_profile_version_id"], ["id"], ondelete="RESTRICT")
-    op.execute("UPDATE projects p SET erp_profile_version_id = v.id FROM erp_profile_versions v WHERE p.erp_profile_id = v.profile_id AND v.version = 1")
-    # Older prototype requests did not store an ERP id. Associate one only when the
-    # request name identifies exactly one active profile; ambiguous requests stay untouched.
-    op.execute(r"""
-        WITH candidates AS (
-            SELECT p.id AS project_id, profile.id AS profile_id, profile_version.id AS version_id,
-                   count(*) OVER (PARTITION BY p.id) AS match_count
-            FROM projects p
-            JOIN erp_profiles profile ON (
-                lower(p.name) LIKE '%' || lower(regexp_replace(coalesce(nullif(profile.display_name, ''), profile.name), '\s+(cloud|erp|system|suite|platform)$', '', 'i')) || '%'
-                OR lower(p.name) LIKE '%' || lower(regexp_replace(profile.name, '\s+(cloud|erp|system|suite|platform)$', '', 'i')) || '%'
+    if op.get_bind().dialect.name != "sqlite":
+        op.create_foreign_key("fk_projects_erp_profile_version", "projects", "erp_profile_versions", ["erp_profile_version_id"], ["id"], ondelete="RESTRICT")
+        op.execute("UPDATE projects p SET erp_profile_version_id = v.id FROM erp_profile_versions v WHERE p.erp_profile_id = v.profile_id AND v.version = 1")
+        op.execute(r"""
+            WITH candidates AS (
+                SELECT p.id AS project_id, profile.id AS profile_id, profile_version.id AS version_id,
+                       count(*) OVER (PARTITION BY p.id) AS match_count
+                FROM projects p
+                JOIN erp_profiles profile ON (
+                    lower(p.name) LIKE '%' || lower(regexp_replace(coalesce(nullif(profile.display_name, ''), profile.name), '\s+(cloud|erp|system|suite|platform)$', '', 'i')) || '%'
+                    OR lower(p.name) LIKE '%' || lower(regexp_replace(profile.name, '\s+(cloud|erp|system|suite|platform)$', '', 'i')) || '%'
+                )
+                JOIN erp_profile_versions profile_version
+                  ON profile_version.profile_id = profile.id AND profile_version.version = 1
+                WHERE p.erp_profile_id IS NULL AND p.erp_profile_version_id IS NULL AND profile.active = true
             )
-            JOIN erp_profile_versions profile_version
-              ON profile_version.profile_id = profile.id AND profile_version.version = 1
-            WHERE p.erp_profile_id IS NULL AND p.erp_profile_version_id IS NULL AND profile.active = true
-        )
-        UPDATE projects p
-        SET erp_profile_id = candidates.profile_id, erp_profile_version_id = candidates.version_id
-        FROM candidates
-        WHERE p.id = candidates.project_id AND candidates.match_count = 1
-    """)
+            UPDATE projects p
+            SET erp_profile_id = candidates.profile_id, erp_profile_version_id = candidates.version_id
+            FROM candidates
+            WHERE p.id = candidates.project_id AND candidates.match_count = 1
+        """)
 
     op.add_column("erp_stage_prompts", sa.Column("profile_version_id", sa.String(36), nullable=True))
     op.add_column("erp_stage_prompts", sa.Column("name", sa.String(255), nullable=False, server_default="Stage prompt"))
@@ -92,8 +91,9 @@ def upgrade() -> None:
     op.add_column("erp_stage_prompts", sa.Column("created_by", sa.String(255), nullable=False, server_default="migration"))
     op.add_column("erp_stage_prompts", sa.Column("updated_by", sa.String(255), nullable=False, server_default="migration"))
     op.create_index("ix_erp_stage_prompts_profile_version_id", "erp_stage_prompts", ["profile_version_id"])
-    op.create_foreign_key("fk_erp_stage_prompts_profile_version", "erp_stage_prompts", "erp_profile_versions", ["profile_version_id"], ["id"], ondelete="CASCADE")
-    op.execute("UPDATE erp_stage_prompts p SET profile_version_id = v.id FROM erp_profile_versions v WHERE p.profile_id = v.profile_id AND v.version = 1")
+    if op.get_bind().dialect.name != "sqlite":
+        op.create_foreign_key("fk_erp_stage_prompts_profile_version", "erp_stage_prompts", "erp_profile_versions", ["profile_version_id"], ["id"], ondelete="CASCADE")
+        op.execute("UPDATE erp_stage_prompts p SET profile_version_id = v.id FROM erp_profile_versions v WHERE p.profile_id = v.profile_id AND v.version = 1")
 
     op.create_table(
         "prompt_versions",
