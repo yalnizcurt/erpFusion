@@ -35,22 +35,21 @@ async def lifespan(app: FastAPI):
     On startup: create all tables if in development mode (for quick iteration).
     In production, tables are managed by Alembic migrations.
     """
-    if settings.is_development:
-        logger.info("Development mode — creating database tables if needed")
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-            if engine.dialect.name == "sqlite":
-                from app.dev_sqlite_migrations import migrate_legacy_sqlite
-                await conn.run_sync(migrate_legacy_sqlite)
-        from app.database import async_session_factory
-
-        async with async_session_factory() as session:
-            await ensure_seed_profiles(session)
-            await session.commit()
+    logger.info("Initializing database tables and seed profiles if needed")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
         if engine.dialect.name == "sqlite":
-            async with engine.begin() as conn:
-                from app.dev_sqlite_migrations import migrate_legacy_sqlite
-                await conn.run_sync(migrate_legacy_sqlite)
+            from app.dev_sqlite_migrations import migrate_legacy_sqlite
+            await conn.run_sync(migrate_legacy_sqlite)
+    from app.database import async_session_factory
+
+    async with async_session_factory() as session:
+        await ensure_seed_profiles(session)
+        await session.commit()
+    if engine.dialect.name == "sqlite":
+        async with engine.begin() as conn:
+            from app.dev_sqlite_migrations import migrate_legacy_sqlite
+            await conn.run_sync(migrate_legacy_sqlite)
 
     logger.info("erpFusion backend started")
     yield

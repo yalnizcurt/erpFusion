@@ -394,8 +394,8 @@ class PLSQLValidator:
                 source = re.sub(r"/\*.*?\*/", " ", source, flags=re.DOTALL)
                 return re.sub(r"--[^\r\n]*", " ", source)
 
-            spec_procs = set(re.findall(r"\bPROCEDURE\s+([a-zA-Z][a-zA-Z0-9_$#]*)\s*\(", strip_comments(pks), re.IGNORECASE))
-            body_procs = set(re.findall(r"\bPROCEDURE\s+([a-zA-Z][a-zA-Z0-9_$#]*)\s*\(", strip_comments(pkb), re.IGNORECASE))
+            spec_procs = set(re.findall(r"\bPROCEDURE\s+([a-zA-Z][a-zA-Z0-9_$#]*)\b", strip_comments(pks), re.IGNORECASE))
+            body_procs = set(re.findall(r"\bPROCEDURE\s+([a-zA-Z][a-zA-Z0-9_$#]*)\b", strip_comments(pkb), re.IGNORECASE))
 
             missing_in_body = spec_procs - body_procs
             if missing_in_body:
