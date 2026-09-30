@@ -73,7 +73,7 @@ async def create_project(
 async def list_projects(
     db: AsyncSession = Depends(get_db),
 ) -> ProjectListResponse:
-    """List all projects with their current status."""
+    await ensure_seed_profiles(db)
     result = await db.execute(
         select(Project).order_by(Project.created_at.desc())
     )
