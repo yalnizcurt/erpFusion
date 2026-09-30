@@ -19,7 +19,7 @@ def upgrade() -> None:
         sa.Column("product_version", sa.String(length=128), nullable=True),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("active", sa.Boolean(), nullable=False),
-        sa.Column("configuration", postgresql.JSON(astext_type=sa.Text()), nullable=False),
+        sa.Column("configuration", sa.JSON(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("id", sa.String(length=36), nullable=False),
@@ -43,10 +43,11 @@ def upgrade() -> None:
     op.create_index("ix_erp_stage_prompts_profile_id", "erp_stage_prompts", ["profile_id"])
     op.add_column("projects", sa.Column("erp_profile_id", sa.String(length=36), nullable=True))
     op.create_index("ix_projects_erp_profile_id", "projects", ["erp_profile_id"])
-    op.create_foreign_key(
-        "fk_projects_erp_profile_id_erp_profiles", "projects", "erp_profiles",
-        ["erp_profile_id"], ["id"], ondelete="SET NULL",
-    )
+    if op.get_bind().dialect.name != "sqlite":
+        op.create_foreign_key(
+            "fk_projects_erp_profile_id_erp_profiles", "projects", "erp_profiles",
+            ["erp_profile_id"], ["id"], ondelete="SET NULL",
+        )
 
 
 def downgrade() -> None:

@@ -9,7 +9,7 @@ down_revision = "20260929_01"
 branch_labels = None
 depends_on = None
 
-json_type = postgresql.JSON(astext_type=sa.Text())
+json_type = sa.JSON()
 
 
 def upgrade() -> None:
