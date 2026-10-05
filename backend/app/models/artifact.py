@@ -1,5 +1,5 @@
 """
-erpFusion — Artifact Model
+HighStudio — Artifact Model
 
 An artifact represents one engineering deliverable within a project
 (e.g., Context Analysis, FDD, TDD, SQL, PKS, PKB).
@@ -7,10 +7,16 @@ An artifact represents one engineering deliverable within a project
 Each artifact tracks its current gate status and owns multiple versions.
 """
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, GateStatus, TimestampMixin, UUIDPrimaryKeyMixin
+
+if TYPE_CHECKING:
+    from app.models.project import Project
+    from app.models.version import ArtifactVersion
 
 
 class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -23,6 +29,9 @@ class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         index=True,
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # ── Identity ──────────────────────────────────────────────
     artifact_type: Mapped[str] = mapped_column(String(80), nullable=False)
@@ -32,7 +41,7 @@ class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
     # ── Workflow Gate ─────────────────────────────────────────
     gate_status: Mapped[GateStatus] = mapped_column(
-        Enum(GateStatus, name="gate_status"),
+        Enum(GateStatus, name="gate_status", native_enum=False),
         default=GateStatus.LOCKED,
         nullable=False,
     )

@@ -1,489 +1,69 @@
-import React, { useState } from 'react';
-import {
-  Copy,
-  Check,
-  CheckCircle2,
-  XCircle,
-  RotateCcw,
-  CheckCircle,
-  BarChart2,
-  FileDown,
-  GitCompare,
-} from 'lucide-react';
-import { openArtifactAsPdf } from '../utils/generatePdf';
+import React, { useRef, useState } from 'react';
+import { FileText, ShieldCheck, GitCompare, FileDown, Lock } from 'lucide-react';
+import { label } from '../utils/product';
 
-export default function BottomCards({
-  artifact,
-  versions = [],
-  selectedVersion,
-  onSelectVersion,
-  validations = [],
-  onApprove,
-  onRequestChanges,
-  onReject,
-  onOpenDiff,
-}) {
-  const [activeTab, setActiveTab] = useState('doc');
-  const [copied, setCopied] = useState(false);
-  const [showChangesModal, setShowChangesModal] = useState(false);
-  const [reviewComments, setReviewComments] = useState('');
+function DocumentValue({ value }) {
+  if (value == null) return <span className="muted">Not provided</span>;
+  if (typeof value !== 'object') return <span>{String(value)}</span>;
+  if (Array.isArray(value)) return <div className="document-items">{value.map((item, index) => <div key={index}><DocumentValue value={item} /></div>)}</div>;
+  return <dl className="document-fields">{Object.entries(value).map(([key, item]) => <div key={key}><dt>{label(key)}</dt><dd><DocumentValue value={item} /></dd></div>)}</dl>;
+}
 
+export default function BottomCards({ artifact, versions = [], selectedVersion, onSelectVersion, validations = [], onApprove, onRequestChanges, onReject, onOpenDiff, canReview = false, isReviewing = false, approvalBlockers = [] }) {
+  const [view, setView] = useState('doc');
+  const [dialog, setDialog] = useState(null);
+  const [comments, setComments] = useState('');
+  const [error, setError] = useState('');
+  const [pdfError, setPdfError] = useState('');
+  const pending = useRef(false);
   const content = selectedVersion?.content || {};
-  const isPendingReview = selectedVersion?.state === 'PENDING_HUMAN_REVIEW';
-  const metadata = selectedVersion?.input_context_snapshot || {};
-  const validationState = validations.some((v) => v.status === 'FAIL') ? 'FAIL' : validations.some((v) => v.status === 'WARN') ? 'WARN' : validations.length ? 'PASS' : 'NOT RUN';
-
-  const copyCode = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const historical = !!selectedVersion && artifact?.current_version !== undefined && artifact.current_version !== selectedVersion.version_number;
+  const reviewable = selectedVersion?.state === 'PENDING_HUMAN_REVIEW' && !historical && canReview;
+  const submit = async (action) => {
+    if (!reviewable || isReviewing || pending.current) return;
+    pending.current = true; setError('');
+    try { await action(); setDialog(null); setComments(''); }
+    catch (cause) { setError(cause instanceof Error ? cause.message : 'Review failed.'); }
+    finally { pending.current = false; }
   };
-
-  const handleApprove = () => {
-    if (window.confirm(`Approve ${artifact?.artifact_type} v${selectedVersion?.version_number}? This will advance the workflow gate.`)) {
-      onApprove(selectedVersion?.version_number, 'Lead Architect');
+  const decide = () => {
+    if (!comments.trim()) { setError('Enter reviewer feedback.'); return; }
+    void submit(() => (dialog === 'reject' ? onReject : onRequestChanges)(selectedVersion.version_number, undefined, comments.trim()));
+  };
+  const exportPdf = async () => {
+    setPdfError('');
+    let popup;
+    try {
+      popup = window.open('', '_blank');
+      if (!popup) throw new Error('Allow pop-ups to view the PDF.');
+      const { createArtifactPdf } = await import('../utils/generatePdf');
+      const url = URL.createObjectURL(await createArtifactPdf(artifact, selectedVersion));
+      popup.location.href = url;
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (cause) {
+      popup?.close();
+      setPdfError(cause instanceof Error ? cause.message : 'Could not create the PDF.');
     }
   };
-
-  const handleRequestChanges = () => {
-    if (!reviewComments.trim()) {
-      alert('Please enter your feedback comments for the requested change.');
-      return;
-    }
-    onRequestChanges(selectedVersion?.version_number, 'Lead Architect', reviewComments);
-    setShowChangesModal(false);
-    setReviewComments('');
-  };
-
-  const handleReject = () => {
-    const reason = prompt('Please enter the reason for rejection:');
-    if (reason) {
-      onReject(selectedVersion?.version_number, 'Lead Architect', reason);
-    }
-  };
-
-  return (
-    <div className="bottom-cards-grid" style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-      gap: '16px',
-      margin: '16px 24px 24px 24px',
-    }}>
-      {/* Left Card: Artifact Studio */}
-      <div className="hr-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>
-              Artifact Studio
-            </h3>
-            <span style={{ fontSize: '12px', color: '#64748b' }}>
-              — Stage: {artifact?.artifact_type?.replace('_', ' ') || 'Context Analysis'}
-            </span>
-            {versions && versions.length > 0 && (
-              <select
-                aria-label="Select artifact version"
-                value={selectedVersion?.version_number || ''}
-                onChange={(e) => onSelectVersion && onSelectVersion(Number(e.target.value))}
-                style={{
-                  padding: '2px 8px',
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  borderRadius: '4px',
-                  border: '1px solid #cbd5e1',
-                  background: '#f8fafc',
-                  color: '#1e293b',
-                  cursor: 'pointer',
-                  marginLeft: '4px',
-                  outline: 'none',
-                }}
-              >
-                {versions.map((v) => (
-                  <option key={v.id || v.version_number} value={v.version_number}>
-                    v{v.version_number} ({v.state})
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Sub-tabs + Action Buttons */}
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-            <button
-              onClick={() => setActiveTab('doc')}
-              style={{
-                padding: '3px 8px',
-                fontSize: '11px',
-                fontWeight: activeTab === 'doc' ? '600' : '500',
-                background: activeTab === 'doc' ? 'var(--hr-orange-subtle)' : 'transparent',
-                color: activeTab === 'doc' ? 'var(--hr-orange)' : '#64748b',
-                border: activeTab === 'doc' ? '1px solid var(--hr-orange-border)' : '1px solid transparent',
-                borderRadius: '3px',
-                cursor: 'pointer',
-              }}
-            >
-              Document
-            </button>
-            <button
-              onClick={() => setActiveTab('code')}
-              style={{
-                padding: '3px 8px',
-                fontSize: '11px',
-                fontWeight: activeTab === 'code' ? '600' : '500',
-                background: activeTab === 'code' ? 'var(--hr-orange-subtle)' : 'transparent',
-                color: activeTab === 'code' ? 'var(--hr-orange)' : '#64748b',
-                border: activeTab === 'code' ? '1px solid var(--hr-orange-border)' : '1px solid transparent',
-                borderRadius: '3px',
-                cursor: 'pointer',
-              }}
-            >
-              SQL / Code
-            </button>
-            <button
-              onClick={() => setActiveTab('json')}
-              style={{
-                padding: '3px 8px',
-                fontSize: '11px',
-                fontWeight: activeTab === 'json' ? '600' : '500',
-                background: activeTab === 'json' ? 'var(--hr-orange-subtle)' : 'transparent',
-                color: activeTab === 'json' ? 'var(--hr-orange)' : '#64748b',
-                border: activeTab === 'json' ? '1px solid var(--hr-orange-border)' : '1px solid transparent',
-                borderRadius: '3px',
-                cursor: 'pointer',
-              }}
-            >
-              JSON
-            </button>
-
-            {/* Separator */}
-            <div style={{ width: '1px', height: '18px', background: '#e2e8f0', margin: '0 4px' }} />
-
-            {/* View as PDF Button */}
-            <button
-              onClick={() => artifact && selectedVersion && openArtifactAsPdf(artifact, selectedVersion)}
-              disabled={!selectedVersion}
-              title="Open document as PDF in new tab"
-              style={{
-                padding: '3px 10px',
-                fontSize: '11px',
-                fontWeight: '600',
-                background: selectedVersion ? 'var(--hr-blue-primary)' : '#e2e8f0',
-                color: selectedVersion ? '#ffffff' : '#94a3b8',
-                border: 'none',
-                borderRadius: '3px',
-                cursor: selectedVersion ? 'pointer' : 'not-allowed',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <FileDown size={12} />
-              View as PDF
-            </button>
-
-            {/* Diff Button (moved here from FilterControlBar) */}
-            {versions.length > 1 && (
-              <button
-                onClick={onOpenDiff}
-                title="Compare version changes"
-                style={{
-                  padding: '3px 8px',
-                  fontSize: '11px',
-                  fontWeight: '500',
-                  background: 'transparent',
-                  color: '#64748b',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '3px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '3px',
-                }}
-              >
-                <GitCompare size={12} />
-                Diff
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div style={{ flex: 1, minWidth: 0, minHeight: 0, maxHeight: '340px', overflowY: 'auto', overflowX: 'hidden' }}>
-          {selectedVersion ? (
-            activeTab === 'doc' ? (
-              <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {/* Stage Title */}
-                <div style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                  <strong>{content.document_title || content.business_objective || artifact?.artifact_type}</strong>
-                </div>
-
-                {/* Table for FDD Attribute Mappings */}
-                {content.attribute_mappings && (
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11.5px', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid #cbd5e1', color: '#64748b' }}>
-                        <th style={{ padding: '6px 8px' }}>Attribute</th>
-                        <th style={{ padding: '6px 8px' }}>ERP Table</th>
-                        <th style={{ padding: '6px 8px' }}>Column</th>
-                        <th style={{ padding: '6px 8px' }}>Transformation</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {content.attribute_mappings.map((m, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '6px 8px', fontWeight: '500' }}>{m.business_attribute}</td>
-                          <td style={{ padding: '6px 8px', color: '#0284c7', fontFamily: 'var(--font-mono)' }}>{m.source_table}</td>
-                          <td style={{ padding: '6px 8px', color: '#334155', fontFamily: 'var(--font-mono)' }}>{m.source_column}</td>
-                          <td style={{ padding: '6px 8px', color: '#059669', fontSize: '10.5px' }}>{m.transformation || 'Direct'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-
-                {/* Table for Context Analysis Identified Entities */}
-                {content.identified_entities && (
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11.5px', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid #cbd5e1', color: '#64748b' }}>
-                        <th style={{ padding: '6px 8px' }}>Entity</th>
-                        <th style={{ padding: '6px 8px' }}>ERP Table</th>
-                        <th style={{ padding: '6px 8px' }}>Role</th>
-                        <th style={{ padding: '6px 8px' }}>Columns</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {content.identified_entities.map((ent, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '6px 8px', fontWeight: '500' }}>{ent.business_name}</td>
-                          <td style={{ padding: '6px 8px', color: '#0284c7', fontFamily: 'var(--font-mono)' }}>{ent.erp_table}</td>
-                          <td style={{ padding: '6px 8px' }}>
-                            <span className="badge badge-locked">{ent.role}</span>
-                          </td>
-                          <td style={{ padding: '6px 8px', color: '#64748b' }}>
-                            {ent.relevant_columns?.map((c) => c.column_name).join(', ')}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-
-                {/* SQL Extraction query preview */}
-                {content.extraction_sql && (
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ fontWeight: '600', color: '#334155' }}>Generated SQL</span>
-                      <button
-                        onClick={() => copyCode(content.extraction_sql)}
-                        style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px' }}
-                      >
-                        {copied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
-                        <span>{copied ? 'Copied' : 'Copy'}</span>
-                      </button>
-                    </div>
-                    <pre className="code-container" style={{ maxHeight: '180px', fontSize: '11px' }}>
-                      {content.extraction_sql}
-                    </pre>
-                  </div>
-                )}
-
-                {/* PL/SQL package preview */}
-                {content.pks_content && (
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ fontWeight: '600', color: '#334155' }}>Package Specification (.pks)</span>
-                      <button
-                        onClick={() => copyCode(content.pks_content)}
-                        style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px' }}
-                      >
-                        {copied ? <Check size={12} color="#059669" /> : <Copy size={12} />}
-                        <span>{copied ? 'Copied' : 'Copy'}</span>
-                      </button>
-                    </div>
-                    <pre className="code-container" style={{ maxHeight: '180px', fontSize: '11px' }}>
-                      {content.pks_content}
-                    </pre>
-                  </div>
-                )}
-              </div>
-            ) : activeTab === 'code' ? (
-              <pre className="code-container" style={{ maxHeight: '320px', fontSize: '11px' }}>
-                {content.extraction_sql || content.pks_content || content.pkb_content || JSON.stringify(content, null, 2)}
-              </pre>
-            ) : (
-              <pre className="code-container" style={{ maxHeight: '320px', maxWidth: '100%', boxSizing: 'border-box', overflow: 'auto', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', fontSize: '11px' }}>
-                {JSON.stringify(content, null, 2)}
-              </pre>
-            )
-          ) : (
-            <div style={{ textAlign: 'center', padding: '50px 20px', color: '#94a3b8', fontSize: '13px' }}>
-              <BarChart2 size={24} style={{ margin: '0 auto 8px', opacity: 0.5 }} />
-              <div>Stage artifact not yet generated.</div>
-              <div style={{ fontSize: '11px', marginTop: '4px' }}>Click "Generate" above to trigger AI generation.</div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right Card: Deterministic Validation Engine */}
-      <div className="hr-card" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b' }}>
-              Deterministic Validation Engine
-            </h3>
-            <span style={{ fontSize: '12px', color: '#64748b' }}>
-              — Pre-Execution Governance
-            </span>
-          </div>
-
-          {/* Validation Status Badge */}
-          <span className={`badge ${validationState === 'PASS' ? 'badge-approved' : validationState === 'FAIL' ? 'badge-invalidated' : 'badge-pending'}`} style={{ fontSize: '11px' }}>
-            <CheckCircle size={12} />
-            Validation {validationState}
-          </span>
-        </div>
-
-        {/* Validation Checks List */}
-        <div style={{ flex: 1, maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {validations.length > 0 ? (
-            validations.map((v, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: '10px 12px',
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '4px',
-                  fontSize: '12px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <strong style={{ color: '#1e293b' }}>
-                    {v.category === 'SCHEMA' && '✓ Schema Conformity & Hallucination Guard'}
-                    {v.category === 'SQL' && 'SQL validation'}
-                    {v.category === 'PLSQL' && 'Code validation'}
-                    {v.category === 'CROSS_ARTIFACT' && 'Cross-artifact traceability'}
-                    {!['SCHEMA', 'SQL', 'PLSQL', 'CROSS_ARTIFACT'].includes(v.category) && v.category}
-                  </strong>
-                  <span className={`badge ${v.status === 'FAIL' ? 'badge-invalidated' : v.status === 'WARN' ? 'badge-pending' : 'badge-approved'}`} style={{ fontSize: '10px' }}>
-                    {v.status}
-                  </span>
-                </div>
-                {v.checks?.map((chk, ci) => (
-                  <div key={ci} style={{ color: '#475569', fontSize: '11px', marginTop: '2px' }}>
-                    • {chk.message}
-                  </div>
-                ))}
-              </div>
-            ))
-          ) : (
-            <div style={{
-              padding: '12px',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '4px',
-              fontSize: '12px',
-              color: '#64748b'
-            }}>
-              <div style={{ fontWeight: '600', color: '#334155', marginBottom: '4px' }}>
-                Pre-Execution Verification Active
-              </div>
-              <div>• Validation rules are resolved from the request’s pinned ERP profile version.</div>
-              <div>• Downstream stages remain locked until required approvals are complete.</div>
-            </div>
-          )}
-        </div>
-
-        {/* Human Review Decision Buttons Footer */}
-        {isPendingReview && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: '8px',
-            paddingTop: '12px',
-            borderTop: '1px solid var(--border-light)',
-            marginTop: '8px'
-          }}>
-            <button
-              onClick={handleApprove}
-              className="btn btn-success"
-              style={{ padding: '6px 12px', fontSize: '12px' }}
-            >
-              <CheckCircle2 size={14} />
-              <span>Approve Gate</span>
-            </button>
-            <button
-              onClick={() => setShowChangesModal(true)}
-              className="btn btn-warning"
-              style={{ padding: '6px 12px', fontSize: '12px' }}
-            >
-              <RotateCcw size={14} />
-              <span>Request Changes</span>
-            </button>
-            <button
-              onClick={handleReject}
-              className="btn btn-danger"
-              style={{ padding: '6px 12px', fontSize: '12px' }}
-            >
-              <XCircle size={14} />
-              <span>Reject</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      <details style={{ gridColumn: '1 / -1', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 16px' }}>
-        <summary style={{ cursor: 'pointer', fontSize: 13, fontWeight: 650 }}>Why was this generated this way? <span style={{ fontWeight: 400, color: '#64748b' }}>Inspect configuration and source provenance</span></summary>
-        {selectedVersion ? <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12, fontSize: 12 }}>
-          <div><b>ERP profile</b><pre style={{ whiteSpace: 'pre-wrap', color: '#475569' }}>{JSON.stringify(metadata.erp_profile || {}, null, 2)}</pre></div>
-          <div><b>Prompt versions</b><pre style={{ whiteSpace: 'pre-wrap', color: '#475569' }}>{JSON.stringify(metadata.prompt_versions || [], null, 2)}</pre></div>
-          <div><b>Knowledge and standard packages</b><pre style={{ whiteSpace: 'pre-wrap', color: '#475569' }}>{JSON.stringify({ knowledge: metadata.knowledge_asset_versions || [], packages: metadata.standard_package_versions || [] }, null, 2)}</pre></div>
-          <div><b>Feedback and upstream references</b><pre style={{ whiteSpace: 'pre-wrap', color: '#475569' }}>{JSON.stringify({ feedback: metadata.feedback_versions || [], upstream: metadata.upstream_artifacts || {} }, null, 2)}</pre></div>
-        </div> : <p style={{ marginTop: 10, color: '#64748b', fontSize: 12 }}>Generation provenance is available after an artifact is generated.</p>}
-      </details>
-
-      {/* Changes Request Modal */}
-      {showChangesModal && (
-        <div className="hr-modal-overlay">
-          <div className="hr-modal-content" style={{ width: '500px', padding: '20px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '6px' }}>
-              Request Changes on {artifact?.artifact_type} v{selectedVersion?.version_number}
-            </h3>
-            <p style={{ fontSize: '12px', color: '#475569', marginBottom: '12px' }}>
-              Specify the exact adjustments required for the next AI generation cycle.
-            </p>
-            <textarea
-              rows={4}
-              value={reviewComments}
-              onChange={(e) => setReviewComments(e.target.value)}
-              placeholder="e.g. Ensure all supplier names have newlines sanitized, and verify the delta query uses LAST_UPDATE_DATE."
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: '4px',
-                border: '1px solid #cbd5e1',
-                fontSize: '12px',
-                outline: 'none',
-                fontFamily: 'inherit',
-                marginBottom: '14px'
-              }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button onClick={() => setShowChangesModal(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-              <button onClick={handleRequestChanges} className="btn btn-warning">
-                Submit Change Request
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  return <div className="studio-layout artifact-review-layout">
+    <section className="workspace-card document-card">
+      <div className="document-toolbar"><div><FileText className="icon" /><strong>{label(artifact?.artifact_type || 'Artifact')}</strong>{selectedVersion && <span className="version">v{selectedVersion.version_number}</span>}</div><div className="artifact-toolbar-actions">
+        {versions.length > 0 && <label className="revision-select">Revision:<select aria-label="Artifact revision" value={selectedVersion?.version_number || ''} disabled={isReviewing} onChange={(event) => onSelectVersion?.(Number(event.target.value))}>{versions.map((version) => <option key={version.id || version.version_number} value={version.version_number}>v{version.version_number} ({version.state})</option>)}</select></label>}
+        <div className="view-toggle">{[['doc', 'Document'], ['code', 'SQL / Code'], ['json', 'JSON']].map(([id, title]) => <button key={id} className={view === id ? 'active' : ''} onClick={() => setView(id)}>{title}</button>)}</div>
+        <button className="icon-button" aria-label="View as PDF" title="View as PDF" disabled={!selectedVersion} onClick={() => { void exportPdf(); }}><FileDown className="icon" /></button>{versions.length > 1 && <button className="icon-button" aria-label="Diff" title="Compare revisions" onClick={onOpenDiff}><GitCompare className="icon" /></button>}
+      </div></div>
+      {historical && <div className="notice slate">Historical revision. Read only; the active workflow is unchanged.</div>}
+      {!selectedVersion ? <div className="locked-workspace"><span className="big-icon"><FileText className="icon" /></span><h2>No generated artifact yet</h2><p>Generate the selected stage after its prerequisites are approved.</p></div> : view === 'doc' ? <article className="document"><div className="document-brand"><span>High<span>Studio</span></span><span>ENGINEERING DOCUMENT</span></div><div className="document-eyebrow">{label(artifact?.artifact_type)} / V{selectedVersion.version_number}</div><h2>{content.document_title || content.business_objective || label(artifact?.artifact_type)}</h2><div className="document-metadata"><span>{label(selectedVersion.state)}</span></div><div className="document-rule" /><div className="document-body"><DocumentValue value={content} /></div></article> : <pre className="code-container json-view" style={{ maxWidth: '100%', overflow: 'auto', overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>{view === 'json' ? JSON.stringify(content, null, 2) : content.extraction_sql || content.pks_content || content.pkb_content || JSON.stringify(content, null, 2)}</pre>}
+      <div className="document-disclaimer"><Lock className="icon" />Approvals apply to the exact artifact revision.</div>
+      {pdfError && <p role="alert" className="error-text">{pdfError}</p>}
+    </section>
+    <aside className="context-panel"><section className="context-card"><div className="context-heading"><ShieldCheck className="icon" /><h3>Review & approval</h3></div><span className={`badge ${selectedVersion?.state === 'APPROVED' ? 'green' : 'amber'}`}>{selectedVersion ? label(selectedVersion.state) : 'Awaiting generation'}</span><p>Review the document and required validations before approving this revision.</p>
+      {validations.length ? <div className="validation-list">{validations.map((validation, index) => <div key={validation.id || index}><strong>{label(validation.category)}</strong><span className={`badge ${validation.status === 'PASS' ? 'green' : validation.status === 'FAIL' ? 'red' : 'amber'}`}>{validation.status}</span>{validation.checks?.map((check, checkIndex) => <p key={checkIndex}>{check.message}</p>)}</div>)}</div> : <div className="notice slate">No validation evidence is available.</div>}
+      {error && !dialog && <p role="alert" className="error-text">{error}</p>}
+      {reviewable && approvalBlockers.length > 0 && <div className="notice amber"><strong>Clarifications required before approval</strong>{approvalBlockers.map((blocker, index) => <p key={index}>{blocker}</p>)}<p>Update the requirement or context and regenerate this assessment.</p></div>}
+      {reviewable && <div className="review-actions"><button disabled={isReviewing || approvalBlockers.length > 0} className="btn primary full" onClick={() => { setDialog('approve'); setError(''); }}>Approve Gate</button><button disabled={isReviewing} className="btn secondary full" onClick={() => { setDialog('changes'); setError(''); }}>Request Changes</button><button disabled={isReviewing} className="btn ghost full" onClick={() => { setDialog('reject'); setError(''); }}>Reject</button></div>}
+      {!canReview && selectedVersion && <p>{selectedVersion.state !== 'PENDING_HUMAN_REVIEW' || historical ? 'This revision is read only. Generate a new revision to continue.' : 'Review is unavailable. Check the active workflow and your reviewer permissions.'}</p>}
+    </section><section className="context-card"><div className="context-heading"><FileText className="icon" /><h3>Source provenance</h3></div><details><summary>Why was this generated this way?</summary><pre className="provenance-json">{JSON.stringify(selectedVersion?.input_context_snapshot || {}, null, 2)}</pre></details></section></aside>
+    {dialog && <div className="hr-modal-overlay" role="dialog" aria-modal="true" aria-label={dialog === 'approve' ? 'Approve artifact revision' : dialog === 'reject' ? 'Reject artifact' : 'Request artifact changes'}><div className="hr-modal-content"><h2>{dialog === 'approve' ? 'Approve' : dialog === 'reject' ? 'Reject' : 'Request Changes on'} {artifact?.artifact_type} v{selectedVersion?.version_number}</h2>{dialog === 'approve' ? <p>Confirm approval of this exact artifact revision.</p> : <><p>Describe the changes needed for the next revision.</p><label className="field-label" htmlFor="review-comments">Review feedback</label><textarea id="review-comments" className="feedback" value={comments} onChange={(event) => setComments(event.target.value)} disabled={isReviewing} /></>}{error && <p role="alert" className="error-text">{error}</p>}<div className="modal-footer"><button className="btn secondary" disabled={isReviewing} onClick={() => setDialog(null)}>Cancel</button><button className="btn primary" disabled={isReviewing} onClick={dialog === 'approve' ? () => void submit(() => onApprove(selectedVersion.version_number)) : decide}>{dialog === 'approve' ? 'Confirm approval' : dialog === 'reject' ? 'Confirm rejection' : 'Submit Change Request'}</button></div></div></div>}
+  </div>;
 }

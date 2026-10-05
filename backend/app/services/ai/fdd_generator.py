@@ -1,5 +1,5 @@
 """
-erpFusion — FDD Generation AI Pipeline
+HighStudio — FDD Generation AI Pipeline
 
 Generates a Functional Design Document from the approved Context Analysis,
 business requirement, and ERP schema context.

@@ -1,1 +1,1 @@
-"""erpFusion — API Package"""
+"""HighStudio — API Package"""

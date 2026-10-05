@@ -1,4 +1,4 @@
-"""erpFusion — Validation Services Package"""
+"""HighStudio — Validation Services Package"""
 
 from app.services.validation.engine import (
     PLSQLValidator,

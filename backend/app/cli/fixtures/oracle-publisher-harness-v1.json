@@ -1,0 +1,235 @@
+{
+  "manifest_id": "oracle-publisher-harness-v1",
+  "version": 1,
+  "description": "Explicit development-only Oracle Fusion product + Publisher integration pattern + synthetic baseline. Existing product/profile versions are preserved; added intelligence versions are explicit. No native export or real Oracle qualification.",
+  "profiles": [
+    {
+      "key": "oracle-fusion-cloud",
+      "name": "Oracle Fusion Cloud",
+      "display_name": "Oracle Fusion Cloud",
+      "vendor": "Oracle",
+      "product_version": "Cloud",
+      "description": "ERP product catalogue. Qualified support depends on the selected integration pattern and environment.",
+      "status": "PUBLISHED",
+      "configuration": {},
+      "profile_version": {
+        "version": 1,
+        "status": "PUBLISHED",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "PUBLISHER"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT_ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "PUBLISHER",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "publisher_source",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "Publisher source"
+              }
+            ]
+          },
+          "validation": {
+            "schema_conformity": false,
+            "rules": [
+              {
+                "name": "publisher-source-files",
+                "stage": "PUBLISHER",
+                "type": "required_keys",
+                "keys": [
+                  "files",
+                  "artifact_contract"
+                ]
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 5000
+          },
+          "execution_target": {
+            "kind": "BI_PUBLISHER_SOURCE",
+            "native_import": "UNQUALIFIED",
+            "direct_plsql_installation": false
+          }
+        },
+        "prompts": [
+          {
+            "name": "Publisher CONTEXT_ANALYSIS",
+            "scope": "STAGE",
+            "stage": "CONTEXT_ANALYSIS",
+            "content": "Analyze the supplied requirements and approved upstream design. Return structured JSON. Identify ambiguity and never invent schema objects. This profile targets Publisher source, not direct PL/SQL installation.",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "Publisher FDD",
+            "scope": "STAGE",
+            "stage": "FDD",
+            "content": "Analyze the supplied requirements and approved upstream design. Return structured JSON. Identify ambiguity and never invent schema objects. This profile targets Publisher source, not direct PL/SQL installation.",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "Publisher TDD",
+            "scope": "STAGE",
+            "stage": "TDD",
+            "content": "Analyze the supplied requirements and approved upstream design. Return structured JSON. Identify ambiguity and never invent schema objects. This profile targets Publisher source, not direct PL/SQL installation.",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "Publisher PUBLISHER",
+            "scope": "STAGE",
+            "stage": "CODE_GENERATION",
+            "content": "Return a JSON object containing sql_query with a read-only SELECT for an Oracle Publisher data model using only approved TDD and schema. This is source, not a native export. Never emit installable PL/SQL, .xdm or .xdo claims.",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          }
+        ]
+      },
+      "sample_projects": [],
+      "integration_patterns": [
+        {
+          "key": "publisher-outbound",
+          "name": "BI Publisher Outbound Extract",
+          "description": "Synthetic demonstration baseline, not a qualified HighRadius production package.",
+          "runtime_type": "ERP_NATIVE",
+          "direction": "OUTBOUND",
+          "deliverable_type": "PUBLISHER_SOURCE",
+          "qualification_strategy": "NATIVE_ARTIFACT",
+          "delivery_method": "CUSTOMER_CONTROLLED_IMPORT",
+          "configuration": {
+            "artifact_contract": "publisher-source-v1",
+            "adapter_bindings": {
+              "SIMULATED": "oracle_simulator",
+              "REMOTE": "oracle_fusion_publisher"
+            },
+            "required_capabilities": [
+              "INSTALL_ARTIFACT",
+              "VERIFY_ARTIFACT",
+              "RUN_REPORT",
+              "COLLECT_EVIDENCE"
+            ],
+            "optional_capabilities": [
+              "CHECK_CONNECTION",
+              "CHECK_REPORT_ACCESS"
+            ],
+            "qualification_policy": {
+              "allowed_modes": [
+                "SIMULATED"
+              ],
+              "required_assurance": [
+                "SIMULATED_INSTALLATION",
+                "SIMULATED_EXECUTION",
+                "SIMULATED_FUNCTIONAL_ASSERTIONS_PASSED"
+              ]
+            },
+            "testing": {
+              "version": "publisher-demo-1",
+              "required_cases": [
+                {
+                  "id": "row-count",
+                  "assertion": {
+                    "type": "CSV_ROW_COUNT"
+                  },
+                  "expected": 1
+                },
+                {
+                  "id": "headers",
+                  "assertion": {
+                    "type": "CSV_HEADERS"
+                  },
+                  "expected": [
+                    "invoice_id",
+                    "amount",
+                    "currency"
+                  ]
+                },
+                {
+                  "id": "total",
+                  "assertion": {
+                    "type": "CSV_DECIMAL_SUM",
+                    "field": "amount"
+                  },
+                  "expected": "10.00"
+                }
+              ]
+            },
+            "supported_environments": [
+              "ERPFUSION_SANDBOX",
+              "CUSTOMER_TEST",
+              "CUSTOMER_UAT"
+            ],
+            "generation_rules": {
+              "strategy": "publisher_source",
+              "strategy_version": "1",
+              "stages": [
+                "PUBLISHER"
+              ],
+              "baseline_required": true,
+              "allowed_files": [
+                "extract.sql",
+                "publisher-source.json"
+              ],
+              "allowed_modifications": [
+                "query and mapping changes from approved TDD"
+              ]
+            },
+            "compatibility": {}
+          },
+          "baseline": {
+            "name": "Synthetic Publisher source baseline",
+            "content": {
+              "files": [
+                {
+                  "name": "extract.sql",
+                  "content": "SELECT 'DEMO-001' AS invoice_id, 10 AS amount, 'USD' AS currency FROM dual"
+                },
+                {
+                  "name": "publisher-source.json",
+                  "content": "{\"format\":\"publisher-source-v1\",\"native_import\":\"UNQUALIFIED\"}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

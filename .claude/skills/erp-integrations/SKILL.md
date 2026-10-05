@@ -1,6 +1,6 @@
 ---
 name: erp-integrations
-description: Change or assess erpFusion ERP profiles, prompts and assets, implementation adapters, connections, and vendor capability qualification. Use when onboarding an ERP or changing what an ERP integration can generate, validate, connect to, install or execute.
+description: Change or assess HighStudio ERP profiles, prompts and assets, implementation adapters, connections, and vendor capability qualification. Use when onboarding an ERP or changing what an ERP integration can generate, validate, connect to, install or execute.
 ---
 
 # ERP integrations
@@ -31,6 +31,13 @@ boundaries, and verification owns release evidence.
 SAP, Workday, Dynamics and other catalogue families have live connectors. Fusion
 Publisher access permits package installation. Oracle PL/SQL is a Fusion SaaS
 installer. An existing compatibility branch is an architecture pattern to copy.
+
+## Pattern architecture reference
+
+Read the [HighStudio pattern architecture](../../../docs/architecture/highstudio-integration-patterns.md)
+when a task changes pattern selection, approved baseline pins, target runtime or qualification
+claims. Reuse existing intelligence, ownership, revision and evidence services; installation
+is required only when the selected pattern contract requires it.
 
 ## Source entry points
 

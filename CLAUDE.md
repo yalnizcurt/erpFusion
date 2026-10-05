@@ -1,10 +1,15 @@
-# erpFusion repository guide
+# HighStudio repository guide
 
-erpFusion engineers client-specific ERP integrations: ingest consulting requirements,
-clarify scope, generate reviewable designs and configured implementation artifacts,
-validate them, and retain approvals, package versions and sandbox evidence. Clients
-can have multiple ERP installations and environments. The intended business outcome
-is delivering the correct client data to agreed destination contracts.
+HighStudio is HighRadius's engineering and qualification control plane for client-specific
+ERP integrations. It ingests requirements, reuses approved intelligence and baseline assets,
+generates reviewable changes, retains human approvals and immutable candidates, and records
+pattern-specific target evidence. The selected integration pattern determines its runtime;
+installation is an optional capability. No HighRadius runtime SDK is implied.
+
+Read [HighStudio integration patterns](docs/architecture/highstudio-integration-patterns.md)
+for current architecture steering, capability limits, the implementation audit and remaining
+rename inventory. Oracle Fusion Publisher is one pattern, while legacy PL/SQL profiles remain
+compatible historical configurations with separate database targets.
 
 ## Architecture and applications
 
@@ -14,6 +19,8 @@ is delivering the correct client data to agreed destination contracts.
 | API and domain | `backend/app/main.py`, `api/`, `models/`, `schemas/`: FastAPI, SQLAlchemy and request/response contracts. |
 | Engineering lifecycle | `services/workflow.py`, `project_revisions.py`, `prompt_compiler.py`, `api/generation.py`: approval validity, inputs, compiled context and durable generation runs. |
 | Generation worker/providers | `cli/generation_worker.py`, `services/codegen/strategies.py`, `services/llm/`: separate database worker, configured strategies, Groq/Bedrock/explicit mocks. Worker execution currently also lives in `api/generation.py`. |
+| Integration patterns | `api/integration_patterns.py`, `models/integration_pattern.py`, `services/integration_patterns.py`: exact published profile and approved baseline pins, runtime/deliverable contracts and capability policy. |
+| Execution qualification | `api/executions.py`, `services/execution.py`, `execution_contracts.py`, `execution_adapters.py`, `cli/execution_worker.py`: authorized attempts, simulator/installed transports, evidence and assurance. |
 | ERP integration | `api/erp_profiles.py`, `models/erp_profile.py`, `models/erp_assets.py`, `services/erp_connections.py`: configuration registry and the implemented Fusion Publisher protocol. |
 | Validation/packages | `services/validation/`, `services/packages.py`, `api/packages.py`: application checks, immutable source bundles, assisted evidence and release bindings. |
 | Security/storage | `backend/app/security/`, `services/artifact_storage.py`; `frontend/src/auth/oidc.ts`, `api.ts`: identity, ownership, private files and authenticated browser access. |
@@ -25,6 +32,12 @@ There is no repository MCP runtime. External coding-agent tools/plugins are not
 application integrations. There is no shared workspace package or autonomous
 multi-agent repair/retest service in this codebase. A central destination-contract
 registry and production fan-in/fan-out runtime are not currently implemented.
+
+Delegate only when the user or repository instructions explicitly authorize it. Keep
+at most four agents active including the coordinator (three subagents); give each
+agent disjoint file ownership. As capacity frees, reuse finished agents for the next
+pending work, then verify all changes centrally. Agent delegation does not bypass
+account usage limits.
 
 ## Capability language
 
@@ -40,7 +53,8 @@ manual sandbox sign-off establish different things; consult the relevant skills.
 
 ## Requirement and document precedence
 
-Follow the current explicit task and approved product decisions. Use this guide
+Follow the current explicit task and approved product decisions. The pattern architecture
+record takes precedence over universal Oracle installation assumptions in earlier plans. Use this guide
 and the relevant skill to orient work, then inspect the current implementation.
 The [production plan](docs/production-implementation-plan.md) and
 [UI/provider/sandbox plan](docs/product-ui-bedrock-and-oracle-sandbox-plan.md)
@@ -76,15 +90,17 @@ Setup: Python 3.12 with `backend/uv.lock`, Node >=22.18 with
 drift with the source/scripts before use.
 
 - API, from `backend/`: `uv run --no-sync uvicorn app.main:app --host 127.0.0.1 --port 8000`.
-- Worker, separately from `backend/`: `uv run --no-sync python -m app.cli.generation_worker`.
+- Generation worker, separately from `backend/`: `uv run --no-sync python -m app.cli.generation_worker`.
+- Execution worker, separately from `backend/`: `uv run --no-sync python -m app.cli.execution_worker`.
+- Explicit development pattern fixture: `EXECUTION_SIMULATOR_ENABLED=true uv run --no-sync python -m app.cli seed --manifest oracle-publisher-harness-v1`, after schema initialization; preserves earlier published versions.
 - Product UI, from `frontend/`: `npm run dev` (Vite defaults to port 3000).
 - Mock, from root: `node mock/server.mjs` (defaults to loopback port 4174).
 - Backend checks: `uv run --no-sync python scripts/check_quality.py`, `uv run --no-sync pytest -q`.
 - Frontend checks: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`,
   `npm run test:e2e`, `npm run test:e2e:fullstack`.
 
-Select checks for the task; never report unrun/skipped checks as passed. PostgreSQL
-verification needs a dedicated `TEST_POSTGRES_URL`; browser tests use isolated
+Select checks for the task; never report unrun/skipped checks as passed. Fresh SQLite/offline fixture checks do not certify vendor operations or PostgreSQL controls.
+PostgreSQL verification needs a dedicated `TEST_POSTGRES_URL`; browser tests use isolated
 synthetic data. These commands do not authorize live provider/vendor tests.
 
 ## Skill routing

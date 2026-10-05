@@ -1,35 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { GitCompare, X, ArrowRight, RefreshCw } from 'lucide-react';
-import { apiUrl } from '../api';
+import { useApiResource } from '../hooks/useApiResource';
 
 export default function DiffViewer({ artifact, versions, onClose }) {
   const sortedVersions = [...versions].sort((a, b) => b.version_number - a.version_number);
   const [v1, setV1] = useState(sortedVersions.length > 1 ? sortedVersions[1].version_number : 1);
   const [v2, setV2] = useState(sortedVersions.length > 0 ? sortedVersions[0].version_number : 1);
-  const [diffData, setDiffData] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const loadDiff = useCallback(async () => {
-    if (!artifact?.id || !v1 || !v2 || v1 === v2) return;
-    setLoading(true);
-    try {
-      const res = await fetch(apiUrl(`/api/artifacts/${artifact.id}/diff?v1=${v1}&v2=${v2}`));
-      if (res.ok) {
-        const data = await res.json();
-        setDiffData(data);
-      }
-    } catch (e) {
-      console.error('Failed to load diff', e);
-    } finally {
-      setLoading(false);
-    }
-  }, [artifact?.id, v1, v2]);
-
-  useEffect(() => {
-    if (artifact && v1 && v2 && v1 !== v2) {
-      loadDiff();
-    }
-  }, [artifact, v1, v2, loadDiff]);
+  const { data: diffData, loading, error } = useApiResource(artifact?.id && v1 && v2 && v1 !== v2
+    ? `/api/artifacts/${artifact.id}/diff?v1=${v1}&v2=${v2}` : null);
 
   return (
     <div style={{
@@ -136,7 +114,7 @@ export default function DiffViewer({ artifact, versions, onClose }) {
               <RefreshCw size={18} className="spin" />
               <span>Computing unified diff...</span>
             </div>
-          ) : v1 === v2 ? (
+          ) : error ? <div role="alert" style={{ padding: 24, color: '#991b1b' }}>{error}</div> : v1 === v2 ? (
             <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
               Select two different versions to compare changes.
             </div>

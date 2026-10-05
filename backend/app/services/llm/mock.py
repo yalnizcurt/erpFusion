@@ -1,5 +1,5 @@
 """
-erpFusion — Demo / Mock LLM Provider
+HighStudio — Demo / Mock LLM Provider
 
 Provides high-fidelity, deterministic enterprise Oracle ERP responses
 for AP Invoice extraction when running in offline/demo mode or before
@@ -17,6 +17,8 @@ logger = logging.getLogger("erpfusion.llm.mock")
 
 class MockERPProvider(LLMProvider):
     """High-fidelity Oracle fixture plus data-driven responses for generic strategies."""
+
+    model = "mock"
 
     async def generate_configured_json(self, request: LLMRequest) -> Dict[str, Any]:
         """Return a deterministic response grounded in arbitrary compiled profile context."""
@@ -281,7 +283,7 @@ ORDER BY inv.INVOICE_ID, line.LINE_NUMBER""",
   /******************************************************************************
    * Package: XX_AP_INVOICES_EXTRACT_PKG
    * Purpose: Enterprise extraction engine for Oracle Fusion AP Invoices
-   * Author:  erpFusion Integration Engineering Agent
+   * Author:  HighStudio Integration Engineering Agent
    ******************************************************************************/
 
   -- Main extraction procedure

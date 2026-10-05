@@ -1,7 +1,7 @@
 ---
 name: erp-product-ui
 description: >-
-  Maintain erpFusion product UI behavior, including the fixed shell, Home and
+  Maintain HighStudio product UI behavior, including the fixed shell, Home and
   Engineering Studio navigation, project resumption, approval and history controls,
   permission-aware actions, authenticated downloads and bounded artifact views.
   Use for product interaction or frontend architecture changes.
@@ -36,6 +36,13 @@ The mock's local persistence/authentication represents product behavior. Hidden
 buttons enforce access control. A historical APPROVED badge is a current gate.
 A download is a qualified native installer. Every configured artifact uses an
 Oracle-specific viewer. Leaving Studio cancels a committed generation job.
+
+## Pattern architecture reference
+
+Read the [HighStudio pattern architecture](../../../docs/architecture/highstudio-integration-patterns.md)
+when a task changes pattern selection, approved baseline pins, target runtime or qualification
+claims. Reuse existing intelligence, ownership, revision and evidence services; installation
+is required only when the selected pattern contract requires it.
 
 ## Source entry points
 

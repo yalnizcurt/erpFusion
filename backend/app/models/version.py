@@ -1,18 +1,24 @@
 """
-erpFusion — ArtifactVersion Model
+HighStudio — ArtifactVersion Model
 
 Each version is an immutable snapshot of an artifact's content at a point
 in time. Approved versions are never modified in place — changes produce
 a new version.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, UUIDPrimaryKeyMixin, VersionState
+
+if TYPE_CHECKING:
+    from app.models.artifact import Artifact
+    from app.models.audit import AuditEntry
+    from app.models.validation import ValidationResult
 
 
 class ArtifactVersion(UUIDPrimaryKeyMixin, Base):
@@ -25,13 +31,16 @@ class ArtifactVersion(UUIDPrimaryKeyMixin, Base):
         nullable=False,
         index=True,
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # ── Versioning ────────────────────────────────────────────
     version_number: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # ── State ─────────────────────────────────────────────────
     state: Mapped[VersionState] = mapped_column(
-        Enum(VersionState, name="version_state"),
+        Enum(VersionState, name="version_state", native_enum=False),
         default=VersionState.DRAFT,
         nullable=False,
     )
@@ -72,7 +81,7 @@ class ArtifactVersion(UUIDPrimaryKeyMixin, Base):
 
     generated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -81,6 +90,12 @@ class ArtifactVersion(UUIDPrimaryKeyMixin, Base):
         String(255),
         nullable=True,
         comment="Human reviewer identifier",
+    )
+    reviewer_subject_id: Mapped[str | None] = mapped_column(
+        String(36),
+        ForeignKey("identity_subjects.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     reviewed_at: Mapped[datetime | None] = mapped_column(

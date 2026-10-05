@@ -58,3 +58,12 @@ provider/network policy, clean upload scanning, client-scoped workers and releas
 requirements. Do not claim it is ready based on manifests or old cloud logs.
 Use the [production plan](../../../../docs/production-implementation-plan.md) as
 the target backlog; deployment/migration actions still require task authorization.
+
+## Pattern migration boundary
+
+Retain execution-harness migration `20261005_01`; pattern tables/nullable project, candidate
+and attempt pins belong in additive `20261005_02` (down revision `20261005_01`). Fresh SQLite
+checks exercise schema behavior; they cannot certify PostgreSQL RLS or immutability triggers.
+Explicit development fixture seeding may add a fixture-owned intelligence version while
+preserving an older published profile. Normal startup/read paths must never seed or migrate.
+Do not rewrite the quality ledger to accept introduced diagnostics.

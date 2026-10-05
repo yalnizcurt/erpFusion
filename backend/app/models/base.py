@@ -1,5 +1,5 @@
 """
-erpFusion — SQLAlchemy Model Base & Shared Enums
+HighStudio — SQLAlchemy Model Base & Shared Enums
 
 Defines the declarative base, common mixins, and all enum types
 used across the artifact lifecycle.
@@ -38,7 +38,7 @@ class TimestampMixin:
 class UUIDPrimaryKeyMixin:
     """Adds a UUID primary key column."""
 
-    id: Mapped[uuid.UUID] = mapped_column(
+    id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
@@ -120,3 +120,72 @@ class ValidationStatus(str, enum.Enum):
     PASS = "PASS"
     WARN = "WARN"
     FAIL = "FAIL"
+
+
+class IdentityStatus(enum.StrEnum):
+    """Lifecycle state for a federated identity subject."""
+
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    DISABLED = "DISABLED"
+
+
+class ClientStatus(enum.StrEnum):
+    """Lifecycle state for a customer boundary."""
+
+    ACTIVE = "ACTIVE"
+    ARCHIVED = "ARCHIVED"
+
+
+class MembershipStatus(enum.StrEnum):
+    """Lifecycle state for a role assignment."""
+
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    REVOKED = "REVOKED"
+
+
+class ClientRole(enum.StrEnum):
+    """Roles evaluated within one client boundary."""
+
+    CLIENT_ADMIN = "CLIENT_ADMIN"
+    FUNCTIONAL_REVIEWER = "FUNCTIONAL_REVIEWER"
+    TECHNICAL_REVIEWER = "TECHNICAL_REVIEWER"
+    TESTER = "TESTER"
+    CONSULTANT = "CONSULTANT"
+
+
+class PlatformRole(enum.StrEnum):
+    """Roles evaluated across client boundaries for platform administration."""
+
+    PLATFORM_ADMIN = "PLATFORM_ADMIN"
+    ERP_CONFIGURATOR = "ERP_CONFIGURATOR"
+    ERP_PUBLISHER = "ERP_PUBLISHER"
+    AUDITOR = "AUDITOR"
+
+
+class InstallationStatus(enum.StrEnum):
+    """Lifecycle state for a client ERP installation record."""
+
+    ACTIVE = "ACTIVE"
+    SUSPENDED = "SUSPENDED"
+    ARCHIVED = "ARCHIVED"
+
+
+class EnvironmentType(enum.StrEnum):
+    """Common environment categories; adapters may store additional metadata."""
+
+    DEVELOPMENT = "DEVELOPMENT"
+    SANDBOX = "SANDBOX"
+    TEST = "TEST"
+    UAT = "UAT"
+    PRODUCTION = "PRODUCTION"
+
+
+class EnvironmentStatus(enum.StrEnum):
+    """Lifecycle state for an ERP execution environment."""
+
+    ACTIVE = "ACTIVE"
+    UNVERIFIED = "UNVERIFIED"
+    SUSPENDED = "SUSPENDED"
+    ARCHIVED = "ARCHIVED"

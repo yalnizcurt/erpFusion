@@ -1,5 +1,5 @@
 """
-erpFusion — SQL Generation AI Pipeline
+HighStudio — SQL Generation AI Pipeline
 
 Generates the extraction SQL from the approved TDD and FDD.
 Gate 4 in the workflow.

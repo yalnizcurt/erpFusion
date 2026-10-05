@@ -1,0 +1,17 @@
+name: erpfusion-tests
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: erpfusion_test
+      POSTGRES_USER: erpfusion_test
+      POSTGRES_PASSWORD: local-fixture-only
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erpfusion_test -d erpfusion_test"]
+      interval: 2s
+      timeout: 2s
+      retries: 15

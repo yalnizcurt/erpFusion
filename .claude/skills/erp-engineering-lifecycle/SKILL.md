@@ -1,6 +1,6 @@
 ---
 name: erp-engineering-lifecycle
-description: Change or diagnose erpFusion requirement intake, clarification, FDD/TDD and configured implementation generation, approval gates, revisions, durable jobs, prompt compilation or scoped feedback. Use for workflow progression, regeneration, backtracking and history issues.
+description: Change or diagnose HighStudio requirement intake, clarification, FDD/TDD and configured implementation generation, approval gates, revisions, durable jobs, prompt compilation or scoped feedback. Use for workflow progression, regeneration, backtracking and history issues.
 ---
 
 # ERP engineering lifecycle
@@ -33,6 +33,13 @@ Approval queues the next generation automatically. The worker is an autonomous
 agent swarm. A regeneration must reproduce identical model output. Sandbox
 failures automatically become verified learning notes. Legacy AI helper names
 identify the active generation implementation.
+
+## Pattern architecture reference
+
+Read the [HighStudio pattern architecture](../../../docs/architecture/highstudio-integration-patterns.md)
+when a task changes pattern selection, approved baseline pins, target runtime or qualification
+claims. Reuse existing intelligence, ownership, revision and evidence services; installation
+is required only when the selected pattern contract requires it.
 
 ## Source entry points
 

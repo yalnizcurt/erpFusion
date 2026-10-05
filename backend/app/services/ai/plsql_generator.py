@@ -1,5 +1,5 @@
 """
-erpFusion — PL/SQL Package Generation AI Pipeline
+HighStudio — PL/SQL Package Generation AI Pipeline
 
 Generates complete .pks (specification) and .pkb (body) files from the
 approved TDD, SQL, and FDD.
@@ -119,7 +119,7 @@ Do not mark a feature implemented when it is only a prerequisite.
         result = _package_body_result(response.content, existing_package or {})
     else:
         result = await llm.generate_json(request)
-    logger.info(f"PL/SQL generated: package={result.get('package_name', 'unknown')}")
+    logger.info("PL/SQL generation completed")
     return result
 
 

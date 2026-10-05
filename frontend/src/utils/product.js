@@ -1,0 +1,2 @@
+export const label = (value) => value ? String(value).replaceAll('_', ' ').toLowerCase().replace(/(^|\s)\S/g, (letter) => letter.toUpperCase()).replace(/\b(fdd|tdd|sql|plsql|pks|pkb|json|erp)\b/gi, (word) => word.toUpperCase()) : 'Not set';
+export const dateLabel = (value) => value ? new Date(value.length === 10 ? `${value}T12:00:00` : value).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) : 'Not set';

@@ -1,0 +1,2199 @@
+{
+  "catalogue_id": "erp-catalogue",
+  "version": 1,
+  "families": [
+    {
+      "key": "sap-s4hana",
+      "name": "SAP S/4HANA",
+      "display_name": "SAP S/4HANA",
+      "vendor": "SAP",
+      "description": "Governed draft catalogue profile for SAP S/4HANA. Candidate route: Edition-approved extensions or customer transports; external integration where appropriate. Qualification is pending.",
+      "implementation_route": "Edition-approved extensions or customer transports; external integration where appropriate.",
+      "qualification_needed": "Separate Public Cloud from private or on-premises; qualify released interfaces and tooling.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Edition-approved extensions or customer transports; external integration where appropriate.",
+          "qualification_needed": "Separate Public Cloud from private or on-premises; qualify released interfaces and tooling."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "sap-ecc",
+      "name": "SAP ECC",
+      "display_name": "SAP ECC",
+      "vendor": "SAP",
+      "description": "Governed draft catalogue profile for SAP ECC. Candidate route: Customer ABAP transport pipeline or private runner. Qualification is pending.",
+      "implementation_route": "Customer ABAP transport pipeline or private runner.",
+      "qualification_needed": "Confirm release, development and test landscape, transport permissions, and rollback.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Customer ABAP transport pipeline or private runner.",
+          "qualification_needed": "Confirm release, development and test landscape, transport permissions, and rollback."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "sap-business-one",
+      "name": "SAP Business One",
+      "display_name": "SAP Business One",
+      "vendor": "SAP",
+      "description": "Governed draft catalogue profile for SAP Business One. Candidate route: Supported add-on or extension tooling; external integration where appropriate. Qualification is pending.",
+      "implementation_route": "Supported add-on or extension tooling; external integration where appropriate.",
+      "qualification_needed": "Qualify API access separately from add-on installation and confirm company database.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported add-on or extension tooling; external integration where appropriate.",
+          "qualification_needed": "Qualify API access separately from add-on installation and confirm company database."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "oracle-fusion-cloud",
+      "name": "Oracle Fusion Cloud ERP",
+      "display_name": "Oracle Fusion Cloud ERP",
+      "vendor": "Oracle",
+      "description": "Governed draft catalogue profile for Oracle Fusion Cloud ERP. Candidate route: Proposed Publisher report and data-model extraction; supported API/integration. PL/SQL execution requires a separate external Oracle database. Qualification is pending.",
+      "implementation_route": "Proposed Publisher report and data-model extraction; supported API/integration. PL/SQL execution requires a separate external Oracle database.",
+      "qualification_needed": "First priority: qualify a real non-production pod, native import route, and report output assertions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Proposed Publisher report and data-model extraction; supported API/integration. PL/SQL execution requires a separate external Oracle database.",
+          "qualification_needed": "First priority: qualify a real non-production pod, native import route, and report output assertions."
+        },
+        "execution_target": {
+          "kind": "FUSION_PUBLISHER_REPORT_EXTRACTION",
+          "status": "PROPOSED_UNQUALIFIED",
+          "description": "Publisher report/data-model extraction is the proposed Fusion execution target; it is not a package installation target."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "FUSION_PUBLISHER_REPORT_EXTRACTION",
+            "status": "PROPOSED_UNQUALIFIED",
+            "description": "Publisher report/data-model extraction is the proposed Fusion execution target; it is not a package installation target."
+          }
+        },
+        "external_database_package_adapter": {
+          "adapter": "oracle_plsql",
+          "execution_target": "EXTERNAL_ORACLE_DATABASE",
+          "status": "UNQUALIFIED",
+          "description": "Oracle PL/SQL remains a separate adapter for a separately configured external Oracle database."
+        }
+      }
+    },
+    {
+      "key": "oracle-ebs",
+      "name": "Oracle E-Business Suite (EBS)",
+      "display_name": "Oracle E-Business Suite (EBS)",
+      "vendor": "Oracle",
+      "description": "Governed draft catalogue profile for Oracle E-Business Suite (EBS). Candidate route: Customer-approved application or database customization deployment. Qualification is pending.",
+      "implementation_route": "Customer-approved application or database customization deployment.",
+      "qualification_needed": "Confirm release-specific standards, grants, and private runner.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Customer-approved application or database customization deployment.",
+          "qualification_needed": "Confirm release-specific standards, grants, and private runner."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "oracle-netsuite",
+      "name": "Oracle NetSuite",
+      "display_name": "Oracle NetSuite",
+      "vendor": "Oracle",
+      "description": "Governed draft catalogue profile for Oracle NetSuite. Candidate route: SuiteCloud project/tooling or external integration. Qualification is pending.",
+      "implementation_route": "SuiteCloud project/tooling or external integration.",
+      "qualification_needed": "Qualify sandbox roles, authentication, object compatibility, and deployment proof.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "SuiteCloud project/tooling or external integration.",
+          "qualification_needed": "Qualify sandbox roles, authentication, object compatibility, and deployment proof."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      },
+      "legacy_keys": [
+        "netsuite-erp"
+      ]
+    },
+    {
+      "key": "dynamics-365-finance-operations",
+      "name": "Microsoft Dynamics 365 Finance & Operations",
+      "display_name": "Microsoft Dynamics 365 Finance & Operations",
+      "vendor": "Microsoft",
+      "description": "Governed draft catalogue profile for Microsoft Dynamics 365 Finance & Operations. Candidate route: Compatible package through the customer's Microsoft deployment pipeline. Qualification is pending.",
+      "implementation_route": "Compatible package through the customer's Microsoft deployment pipeline.",
+      "qualification_needed": "Confirm deployment topology, build environment, and test tenant permissions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Compatible package through the customer's Microsoft deployment pipeline.",
+          "qualification_needed": "Confirm deployment topology, build environment, and test tenant permissions."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      },
+      "legacy_keys": [
+        "dynamics-365-fo"
+      ]
+    },
+    {
+      "key": "microsoft-dynamics-ax",
+      "name": "Microsoft Dynamics AX",
+      "display_name": "Microsoft Dynamics AX",
+      "vendor": "Microsoft",
+      "description": "Governed draft catalogue profile for Microsoft Dynamics AX. Candidate route: Version-specific model/package and customer tooling. Qualification is pending.",
+      "implementation_route": "Version-specific model/package and customer tooling.",
+      "qualification_needed": "Confirm installed release and private development/test infrastructure.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Version-specific model/package and customer tooling.",
+          "qualification_needed": "Confirm installed release and private development/test infrastructure."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "microsoft-dynamics-gp",
+      "name": "Microsoft Dynamics GP",
+      "display_name": "Microsoft Dynamics GP",
+      "vendor": "Microsoft",
+      "description": "Governed draft catalogue profile for Microsoft Dynamics GP. Candidate route: Customer customization or integration tooling. Qualification is pending.",
+      "implementation_route": "Customer customization or integration tooling.",
+      "qualification_needed": "Confirm installed runtime, company permissions, and supported package type.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Customer customization or integration tooling.",
+          "qualification_needed": "Confirm installed runtime, company permissions, and supported package type."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "microsoft-business-central",
+      "name": "Microsoft Business Central",
+      "display_name": "Microsoft Business Central",
+      "vendor": "Microsoft",
+      "description": "Governed draft catalogue profile for Microsoft Business Central. Candidate route: AL extension and supported app-management route. Qualification is pending.",
+      "implementation_route": "AL extension and supported app-management route.",
+      "qualification_needed": "Qualify SaaS/on-premises edition, environment, toolchain, and installation permissions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "AL extension and supported app-management route.",
+          "qualification_needed": "Qualify SaaS/on-premises edition, environment, toolchain, and installation permissions."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "workday-financial-management",
+      "name": "Workday Financial Management",
+      "display_name": "Workday Financial Management",
+      "vendor": "Workday",
+      "description": "Governed draft catalogue profile for Workday Financial Management. Candidate route: Authorized tenant integration tooling or approved handoff. Qualification is pending.",
+      "implementation_route": "Authorized tenant integration tooling or approved handoff.",
+      "qualification_needed": "Confirm tenant licensing, integration type, and execution permissions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Authorized tenant integration tooling or approved handoff.",
+          "qualification_needed": "Confirm tenant licensing, integration type, and execution permissions."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      },
+      "legacy_keys": [
+        "workday-financials"
+      ]
+    },
+    {
+      "key": "sage-intacct",
+      "name": "Sage Intacct",
+      "display_name": "Sage Intacct",
+      "vendor": "Sage",
+      "description": "Governed draft catalogue profile for Sage Intacct. Candidate route: External integration or qualified native customization. Qualification is pending.",
+      "implementation_route": "External integration or qualified native customization.",
+      "qualification_needed": "Confirm test company, API access, and a separately established customization route.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "External integration or qualified native customization.",
+          "qualification_needed": "Confirm test company, API access, and a separately established customization route."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "sage-x3",
+      "name": "Sage X3",
+      "display_name": "Sage X3",
+      "vendor": "Sage",
+      "description": "Governed draft catalogue profile for Sage X3. Candidate route: Version-specific native package/update tooling or external integration. Qualification is pending.",
+      "implementation_route": "Version-specific native package/update tooling or external integration.",
+      "qualification_needed": "Confirm development/test folders, package format, and installation permissions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Version-specific native package/update tooling or external integration.",
+          "qualification_needed": "Confirm development/test folders, package format, and installation permissions."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "sage-300",
+      "name": "Sage 300",
+      "display_name": "Sage 300",
+      "vendor": "Sage",
+      "description": "Governed draft catalogue profile for Sage 300. Candidate route: Customer SDK/web customization or external integration. Qualification is pending.",
+      "implementation_route": "Customer SDK/web customization or external integration.",
+      "qualification_needed": "Confirm installed services, runtime, test company, and private connectivity.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Customer SDK/web customization or external integration.",
+          "qualification_needed": "Confirm installed services, runtime, test company, and private connectivity."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "infor-cloudsuite",
+      "name": "Infor CloudSuite",
+      "display_name": "Infor CloudSuite",
+      "vendor": "Infor",
+      "description": "Governed draft catalogue profile for Infor CloudSuite. Candidate route: Use the qualified route for the underlying CloudSuite product. Qualification is pending.",
+      "implementation_route": "Use the qualified route for the underlying CloudSuite product.",
+      "qualification_needed": "Identify the actual CloudSuite product; there is no assumed universal adapter.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Use the qualified route for the underlying CloudSuite product.",
+          "qualification_needed": "Identify the actual CloudSuite product; there is no assumed universal adapter."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "infor-m3",
+      "name": "Infor M3",
+      "display_name": "Infor M3",
+      "vendor": "Infor",
+      "description": "Governed draft catalogue profile for Infor M3. Candidate route: Supported integration or extension tooling. Qualification is pending.",
+      "implementation_route": "Supported integration or extension tooling.",
+      "qualification_needed": "Confirm environment/version, approved extension lifecycle, and test access.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported integration or extension tooling.",
+          "qualification_needed": "Confirm environment/version, approved extension lifecycle, and test access."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "infor-ln",
+      "name": "Infor LN",
+      "display_name": "Infor LN",
+      "vendor": "Infor",
+      "description": "Governed draft catalogue profile for Infor LN. Candidate route: Supported extension management or external integration. Qualification is pending.",
+      "implementation_route": "Supported extension management or external integration.",
+      "qualification_needed": "Confirm extension compatibility, environment, and management permissions.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported extension management or external integration.",
+          "qualification_needed": "Confirm extension compatibility, environment, and management permissions."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "infor-syteline",
+      "name": "Infor SyteLine",
+      "display_name": "Infor SyteLine",
+      "vendor": "Infor",
+      "description": "Governed draft catalogue profile for Infor SyteLine. Candidate route: Supported Mongoose/IDO tooling or integration. Qualification is pending.",
+      "implementation_route": "Supported Mongoose/IDO tooling or integration.",
+      "qualification_needed": "Confirm hosting restrictions and actual management interface.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported Mongoose/IDO tooling or integration.",
+          "qualification_needed": "Confirm hosting restrictions and actual management interface."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "epicor-kinetic",
+      "name": "Epicor Kinetic",
+      "display_name": "Epicor Kinetic",
+      "vendor": "Epicor",
+      "description": "Governed draft catalogue profile for Epicor Kinetic. Candidate route: Supported native solution/tooling or external integration. Qualification is pending.",
+      "implementation_route": "Supported native solution/tooling or external integration.",
+      "qualification_needed": "Qualify hosting/version-specific package format and installation procedure.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported native solution/tooling or external integration.",
+          "qualification_needed": "Qualify hosting/version-specific package format and installation procedure."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "epicor-prophet-21",
+      "name": "Epicor Prophet 21",
+      "display_name": "Epicor Prophet 21",
+      "vendor": "Epicor",
+      "description": "Governed draft catalogue profile for Epicor Prophet 21. Candidate route: Supported customization/integration tooling or approved handoff. Qualification is pending.",
+      "implementation_route": "Supported customization/integration tooling or approved handoff.",
+      "qualification_needed": "Confirm APIs/runtime, authorized test system, and package mechanism.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Supported customization/integration tooling or approved handoff.",
+          "qualification_needed": "Confirm APIs/runtime, authorized test system, and package mechanism."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "acumatica-erp",
+      "name": "Acumatica ERP",
+      "display_name": "Acumatica ERP",
+      "vendor": "Acumatica",
+      "description": "Governed draft catalogue profile for Acumatica ERP. Candidate route: Qualified customization import/publish or external integration. Qualification is pending.",
+      "implementation_route": "Qualified customization import/publish or external integration.",
+      "qualification_needed": "Qualify business API access separately from package publication rights.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Qualified customization import/publish or external integration.",
+          "qualification_needed": "Qualify business API access separately from package publication rights."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    },
+    {
+      "key": "quickbooks-online",
+      "name": "QuickBooks Online",
+      "display_name": "QuickBooks Online",
+      "vendor": "Intuit",
+      "description": "Governed draft catalogue profile for QuickBooks Online. Candidate route: Authorized external application runtime and API integration. Qualification is pending.",
+      "implementation_route": "Authorized external application runtime and API integration.",
+      "qualification_needed": "Qualify test company, OAuth, and integration behavior; no arbitrary database package target.",
+      "configuration": {
+        "catalogue": {
+          "id": "erp-catalogue",
+          "version": 1,
+          "capabilities": {
+            "engineering": {
+              "state": "IN_DEVELOPMENT",
+              "adapter": "generic_json",
+              "qualification": "Generic JSON engineering path only; profile-specific prompts, assets, output contracts, and validation are missing."
+            },
+            "connection": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live endpoint, authentication, or permissions qualified."
+            },
+            "discovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific discovery adapter or schema evidence qualified."
+            },
+            "build": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No approved product-specific baseline or native package format qualified."
+            },
+            "install": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "Execution target and installation permissions are unqualified."
+            },
+            "runtime_test": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No live sandbox, runtime assertions, or qualification evidence exists."
+            },
+            "recovery": {
+              "state": "CONFIGURATION_ONLY",
+              "qualified": false,
+              "qualification": "No product-specific rollback or recovery path is qualified."
+            }
+          },
+          "implementation_route": "Authorized external application runtime and API integration.",
+          "qualification_needed": "Qualify test company, OAuth, and integration behavior; no arbitrary database package target."
+        },
+        "execution_target": {
+          "kind": "UNQUALIFIED",
+          "status": "UNQUALIFIED",
+          "description": "No execution target has been approved or tested."
+        },
+        "profile_version": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "Context analysis"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "Functional design"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "Technical design"
+              }
+            ]
+          },
+          "generation": {
+            "temperature": 0.15,
+            "max_tokens": 16384
+          },
+          "execution_target": {
+            "kind": "UNQUALIFIED",
+            "status": "UNQUALIFIED",
+            "description": "No execution target has been approved or tested."
+          }
+        }
+      }
+    }
+  ]
+}

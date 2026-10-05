@@ -1,14 +1,43 @@
 """
-erpFusion — Pydantic Schemas for API Request/Response
+HighStudio — Pydantic Schemas for API Request/Response
 
 Defines all request bodies, response models, and shared types
 used by the FastAPI route handlers.
 """
 
-from datetime import datetime
+from datetime import date, datetime
+from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
+from app.schemas.identity import (
+    ClientCreate,
+    ClientMembershipCreate,
+    ClientMembershipResponse,
+    ClientResponse,
+    ClientUpdate,
+    ERPEnvironmentCreate,
+    ERPEnvironmentResponse,
+    ERPInstallationCreate,
+    ERPInstallationResponse,
+    IdentitySubjectResponse,
+    PlatformRoleAssignmentCreate,
+)
+from app.services.llm.base import safe_provider_receipt
+
+__all__ = [
+    "ClientCreate",
+    "ClientMembershipCreate",
+    "ClientMembershipResponse",
+    "ClientResponse",
+    "ClientUpdate",
+    "ERPEnvironmentCreate",
+    "ERPEnvironmentResponse",
+    "ERPInstallationCreate",
+    "ERPInstallationResponse",
+    "IdentitySubjectResponse",
+    "PlatformRoleAssignmentCreate",
+]
 
 # ══════════════════════════════════════════════════════════════
 # Project Schemas
@@ -19,14 +48,16 @@ class ProjectCreate(BaseModel):
     """Request body for creating a new project."""
 
     name: str = Field(..., min_length=1, max_length=255, examples=["Customer Extraction"])
-    description: str | None = Field(None, examples=["Extract active customer records for the finance data hub"])
+    description: str | None = Field(
+        None, examples=["Extract active customer records for the finance data hub"]
+    )
     business_requirement: str = Field(
-        ...,
-        min_length=10,
+        "",
+        max_length=500000,
         examples=["Extract active customer records including name, number, and sites..."],
     )
     erp_schema_context: dict = Field(
-        ...,
+        default_factory=dict,
         examples=[
             {
                 "entities": [
@@ -45,6 +76,12 @@ class ProjectCreate(BaseModel):
     tdd_template_path: str | None = Field(None, examples=["templates/tdd_template.docx"])
     erp_profile_id: str | None = None
     erp_profile_version_id: str | None = None
+    integration_pattern_version_id: str | None = None
+    client_id: str | None = None
+    erp_installation_id: str | None = None
+    erp_environment_id: str | None = None
+    project_type: Literal["STANDARD", "CUSTOM"] = "CUSTOM"
+    due_date: date | None = None
 
 
 class ProjectUpdate(BaseModel):
@@ -52,12 +89,29 @@ class ProjectUpdate(BaseModel):
 
     name: str | None = Field(None, min_length=1, max_length=255)
     description: str | None = None
-    business_requirement: str | None = None
+    business_requirement: str | None = Field(None, max_length=500000)
     erp_schema_context: dict | None = None
     fdd_template_path: str | None = None
     tdd_template_path: str | None = None
     erp_profile_id: str | None = None
     erp_profile_version_id: str | None = None
+    integration_pattern_version_id: str | None = None
+    expected_integration_pattern_version_id: str | None = None
+    client_id: str | None = None
+    erp_installation_id: str | None = None
+    erp_environment_id: str | None = None
+    project_type: Literal["STANDARD", "CUSTOM"] | None = None
+    due_date: date | None = None
+    expected_requirement_version: int | None = None
+    expected_schema_context_version: int | None = None
+    expected_erp_profile_version_id: str | None = None
+
+    @field_validator("name", "business_requirement", "erp_schema_context", "project_type")
+    @classmethod
+    def required_fields_cannot_be_null(cls, value):
+        if value is None:
+            raise ValueError("This field cannot be null")
+        return value
 
 
 class ProjectResponse(BaseModel):
@@ -72,6 +126,27 @@ class ProjectResponse(BaseModel):
     tdd_template_path: str | None
     erp_profile_id: str | None = None
     erp_profile_version_id: str | None = None
+    integration_pattern_version_id: str | None = None
+    integration_pattern_name: str | None = None
+    integration_pattern_version: int | None = None
+    client_id: str | None = None
+    erp_installation_id: str | None = None
+    erp_environment_id: str | None = None
+    created_by_subject_id: str | None = None
+    project_type: str = "CUSTOM"
+    due_date: date | None = None
+    last_activity_at: datetime | None = None
+    requirement_version: int = 1
+    schema_context_version: int = 1
+    workflow_revision: int = 0
+    workflow_status: str = "DRAFT"
+    client_name: str | None = None
+    erp_name: str | None = None
+    erp_version: int | None = None
+    current_stage: str | None = None
+    package_available: bool = False
+    package_kind: Literal["candidate", "release"] | None = None
+    package_download_url: str | None = None
     status: str
     created_at: datetime
     updated_at: datetime
@@ -84,6 +159,8 @@ class ProjectListResponse(BaseModel):
 
     projects: list[ProjectResponse]
     total: int
+    next_offset: int | None = None
+    summary: dict[str, int] = Field(default_factory=dict)
 
 
 class ERPProfileCreate(BaseModel):
@@ -139,6 +216,19 @@ class ArtifactVersionResponse(BaseModel):
 
     model_config = {"from_attributes": True}
 
+    @field_serializer("input_context_snapshot")
+    def sanitize_provider_receipts(self, value):
+        if not isinstance(value, dict) or "provider_receipts" not in value:
+            return value
+        snapshot = value.copy()
+        receipts = value["provider_receipts"]
+        snapshot["provider_receipts"] = (
+            [safe_provider_receipt(receipt) for receipt in receipts]
+            if isinstance(receipts, list)
+            else []
+        )
+        return snapshot
+
 
 # ══════════════════════════════════════════════════════════════
 # Workflow / Stage Schemas
@@ -155,6 +245,8 @@ class StageStatusResponse(BaseModel):
     label: str | None = None
     can_generate: bool = False
     depends_on: list[str] = Field(default_factory=list)
+    review_role: str = "TECHNICAL_REVIEWER"
+    approval_blockers: list[str] = Field(default_factory=list)
 
 
 class WorkflowStatusResponse(BaseModel):
@@ -174,6 +266,7 @@ class GenerateRequest(BaseModel):
         examples=["CONTEXT_ANALYSIS"],
         description="Artifact type to generate",
     )
+    execution_attempt_id: str | None = Field(default=None, max_length=36)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -189,8 +282,8 @@ class ReviewRequest(BaseModel):
         examples=["APPROVED", "REQUEST_CHANGES", "REJECTED"],
         description="Review decision",
     )
-    reviewer: str = Field(
-        ...,
+    reviewer: str | None = Field(
+        None,
         min_length=1,
         examples=["john.doe"],
         description="Identifier of the human reviewer",

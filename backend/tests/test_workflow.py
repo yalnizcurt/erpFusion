@@ -61,11 +61,14 @@ async def db_session():
 @pytest_asyncio.fixture
 async def project(db_session: AsyncSession) -> Project:
     """Create a test project with initialized artifacts."""
-    profile = ERPProfile(key="test-profile", name="Test ERP", display_name="Test ERP", vendor="Test", active=True)
+    profile = ERPProfile(
+        key="test-profile", name="Test ERP", display_name="Test ERP", vendor="Test", active=True
+    )
     db_session.add(profile)
     await db_session.flush()
     profile_version = ERPProfileVersion(
-        profile_id=profile.id, version=1, status="PUBLISHED", supported_artifact_types=TEST_STAGE_TYPES,
+        profile_id=profile.id, version=1, status="PUBLISHED",
+        supported_artifact_types=TEST_STAGE_TYPES,
         configuration={"workflow": {"stages": TEST_STAGE_CONFIG}},
     )
     db_session.add(profile_version)
@@ -242,6 +245,41 @@ async def test_request_changes_flow(project: Project, db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "content",
+    [
+        {"requirements_clear": False},
+        {"blocking_questions": ["Which business unit?"]},
+        {"missing_information": ["Approved schema"]},
+        {"ambiguities": [{"description": "Which invoice date?"}]},
+        {"assumptions": [{"description": "Use UTC", "needs_confirmation": True}]},
+        {"missing_information": "Approved schema"},
+    ],
+)
+async def test_unresolved_assessment_cannot_be_approved(project, db_session, content):
+    workflow = WorkflowEngine(db_session)
+    artifact = await workflow.start_generation(project.id, "CONTEXT_ANALYSIS")
+    version = await workflow.complete_generation(artifact, content, "fixture")
+    await workflow.mark_validated(version)
+    status = await workflow.get_workflow_status(project)
+    assert status["stages"][0]["approval_blockers"]
+    with pytest.raises(WorkflowError, match="Resolve blocking requirement questions"):
+        await workflow.approve(version, "reviewer")
+    assert not await workflow.can_generate(project.id, "FDD")
+
+
+def test_resolved_or_nonblocking_assessment_notes_do_not_block_review():
+    assert WorkflowEngine.review_blockers(
+        {
+            "requirements_clear": True,
+            "ambiguities": [{"description": "Confirmed UTC", "resolved": True}],
+            "blocking_questions": [{"question": "Informational only", "blocking": False}],
+            "assumptions": [{"description": "UTC", "needs_confirmation": False}],
+        }
+    ) == []
+
+
+@pytest.mark.asyncio
 async def test_reject_flow(project: Project, db_session: AsyncSession):
     """Test REJECTED state transition."""
     workflow = WorkflowEngine(db_session)
@@ -330,14 +368,16 @@ async def test_regenerating_upstream_invalidates_approved_downstream_automatical
 
     assert context_v2_artifact.gate_status == GateStatus.PENDING_REVIEW
     assert fdd.gate_status == GateStatus.INVALIDATED
-    assert fdd_v1.state == VersionState.INVALIDATED
+    assert fdd_v1.state == VersionState.APPROVED
+    assert fdd_v1.reviewer == "reviewer"
     assert tdd.gate_status == GateStatus.INVALIDATED
-    assert tdd_v1.state == VersionState.INVALIDATED
+    assert tdd_v1.state == VersionState.APPROVED
+    assert tdd_v1.reviewer == "reviewer"
     assert await workflow.can_generate(project.id, "FDD") is False
 
 
 @pytest.mark.asyncio
-async def test_status_reconciles_stale_approved_stages_behind_pending_prerequisite(
+async def test_status_derives_stale_gates_without_reconciling_persisted_state(
     project: Project, db_session: AsyncSession
 ):
     workflow = WorkflowEngine(db_session)
@@ -348,8 +388,13 @@ async def test_status_reconciles_stale_approved_stages_behind_pending_prerequisi
     fdd.gate_status = GateStatus.APPROVED
     tdd.gate_status = GateStatus.APPROVED
 
+    await db_session.flush()
     status = await workflow.get_workflow_status(project)
 
+    assert fdd.gate_status == GateStatus.APPROVED
+    assert tdd.gate_status == GateStatus.APPROVED
+    assert not db_session.dirty
+    assert await workflow.can_generate(project.id, "SQL") is False
     actual = {stage["stage"]: stage["gate_status"] for stage in status["stages"]}
     assert actual["CONTEXT_ANALYSIS"] == "PENDING_REVIEW"
     assert actual["FDD"] == "INVALIDATED"

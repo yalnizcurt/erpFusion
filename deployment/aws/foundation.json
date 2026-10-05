@@ -1,0 +1,1514 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "erpFusion initial AWS staging foundation: private PostgreSQL, private persistent assets, HTTPS frontend, hosted identity, cloud builds and restricted runtime roles",
+  "Parameters": {
+    "CognitoDomain": {
+      "Type": "String",
+      "AllowedPattern": "[a-z0-9-]+",
+      "MinLength": 6,
+      "MaxLength": 63
+    },
+    "ApiOrigin": {
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "^$|^https://[a-z0-9.-]+$"
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.46.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "GatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.46.0.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.46.10.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": "10.46.11.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PublicRoutes": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRoutes"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      },
+      "DependsOn": "GatewayAttachment"
+    },
+    "PublicAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRoutes"
+        }
+      }
+    },
+    "NatAddress": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DependsOn": "GatewayAttachment"
+    },
+    "NatGateway": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        },
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "NatAddress",
+            "AllocationId"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PrivateRoutes": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PrivateRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateRoutes"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "NatGateway"
+        }
+      }
+    },
+    "PrivateAssociationA": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnetA"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRoutes"
+        }
+      }
+    },
+    "PrivateAssociationB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnetB"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRoutes"
+        }
+      }
+    },
+    "ApplicationSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "App Runner and isolated build outbound access; no inbound listeners",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "DatabaseSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "PostgreSQL only from erpFusion application/build role",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 5432,
+            "ToPort": 5432,
+            "SourceSecurityGroupId": {
+              "Ref": "ApplicationSecurityGroup"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "DatabaseSubnets": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Private erpFusion database subnets",
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnetA"
+          },
+          {
+            "Ref": "PrivateSubnetB"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "Database": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "Engine": "postgres",
+        "EngineVersion": "17",
+        "DBInstanceClass": "db.t4g.micro",
+        "AllocatedStorage": "20",
+        "StorageType": "gp3",
+        "StorageEncrypted": true,
+        "DBName": "erpfusion",
+        "MasterUsername": "erpfusion_owner",
+        "ManageMasterUserPassword": true,
+        "DBSubnetGroupName": {
+          "Ref": "DatabaseSubnets"
+        },
+        "VPCSecurityGroups": [
+          {
+            "Ref": "DatabaseSecurityGroup"
+          }
+        ],
+        "PubliclyAccessible": false,
+        "BackupRetentionPeriod": 7,
+        "DeletionProtection": true,
+        "MultiAZ": false,
+        "AutoMinorVersionUpgrade": true,
+        "EnableCloudwatchLogsExports": [],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Snapshot",
+      "UpdateReplacePolicy": "Snapshot"
+    },
+    "SourceBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "FrontendBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "AssetBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "IgnorePublicAcls": true,
+          "BlockPublicPolicy": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "SourceBucketLifecycle": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "SourceBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "SourceBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${SourceBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AssetBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "AssetBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AssetBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${AssetBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "FrontendOAC": {
+      "Type": "AWS::CloudFront::OriginAccessControl",
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-frontend"
+          },
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4"
+        }
+      }
+    },
+    "SecurityHeaders": {
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-security"
+          },
+          "SecurityHeadersConfig": {
+            "ContentTypeOptions": {
+              "Override": true
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true
+            },
+            "ReferrerPolicy": {
+              "ReferrerPolicy": "no-referrer",
+              "Override": true
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 31536000,
+              "IncludeSubdomains": true,
+              "Override": true
+            },
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": {
+                "Fn::Sub": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ${ApiOrigin} https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com https://cognito-idp.${AWS::Region}.amazonaws.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+              },
+              "Override": true
+            }
+          }
+        }
+      }
+    },
+    "FrontendDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Enabled": true,
+          "DefaultRootObject": "index.html",
+          "HttpVersion": "http2and3",
+          "IPV6Enabled": true,
+          "PriceClass": "PriceClass_100",
+          "Origins": [
+            {
+              "Id": "frontend",
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "FrontendBucket",
+                  "RegionalDomainName"
+                ]
+              },
+              "OriginAccessControlId": {
+                "Ref": "FrontendOAC"
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": ""
+              }
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "TargetOriginId": "frontend",
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "CachedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "Compress": true,
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "ResponseHeadersPolicyId": {
+              "Ref": "SecurityHeaders"
+            }
+          },
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+              "ErrorCachingMinTTL": 0
+            },
+            {
+              "ErrorCode": 404,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html",
+              "ErrorCachingMinTTL": 0
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "FrontendBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "FrontendBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+              },
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Sub": "${FrontendBucket.Arn}/*"
+              },
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}"
+                  }
+                }
+              }
+            },
+            {
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FrontendBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${FrontendBucket.Arn}/*"
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "UserPool": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "UserPoolName": {
+          "Fn::Sub": "${AWS::StackName}-users"
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "UsernameAttributes": [
+          "email"
+        ],
+        "UsernameConfiguration": {
+          "CaseSensitive": false
+        },
+        "Policies": {
+          "PasswordPolicy": {
+            "MinimumLength": 14,
+            "RequireLowercase": true,
+            "RequireUppercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "TemporaryPasswordValidityDays": 7
+          }
+        },
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "EmailConfiguration": {
+          "EmailSendingAccount": "COGNITO_DEFAULT"
+        },
+        "Schema": [
+          {
+            "Name": "email",
+            "AttributeDataType": "String",
+            "Required": true,
+            "Mutable": true
+          }
+        ],
+        "UserPoolTags": {
+          "Application": "erpfusion",
+          "Environment": "staging"
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "UserPoolClient": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "UserPool"
+        },
+        "ClientName": "erpfusion-browser",
+        "GenerateSecret": false,
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthScopes": [
+          "openid",
+          "email",
+          "profile"
+        ],
+        "SupportedIdentityProviders": [
+          "COGNITO"
+        ],
+        "CallbackURLs": [
+          {
+            "Fn::Sub": "https://${FrontendDistribution.DomainName}/auth/callback"
+          }
+        ],
+        "LogoutURLs": [
+          {
+            "Fn::Sub": "https://${FrontendDistribution.DomainName}/"
+          }
+        ],
+        "AccessTokenValidity": 5,
+        "IdTokenValidity": 5,
+        "RefreshTokenValidity": 8,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "hours"
+        },
+        "EnableTokenRevocation": true,
+        "PreventUserExistenceErrors": "ENABLED"
+      }
+    },
+    "UserPoolDomain": {
+      "Type": "AWS::Cognito::UserPoolDomain",
+      "Properties": {
+        "Domain": {
+          "Ref": "CognitoDomain"
+        },
+        "UserPoolId": {
+          "Ref": "UserPool"
+        }
+      }
+    },
+    "RuntimeDatabaseSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": "erpFusion restricted runtime PostgreSQL credentials",
+        "GenerateSecretString": {
+          "SecretStringTemplate": "{\"username\":\"erpfusion_runtime\"}",
+          "GenerateStringKey": "password",
+          "PasswordLength": 40,
+          "ExcludeCharacters": "\"\\/@'`"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "GroqSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": "erpFusion live model provider API key",
+        "SecretString": "not-configured",
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "Repository": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": {
+          "Fn::Sub": "${AWS::StackName}-api"
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Keep last ten build images\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "PullRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "build.apprunner.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "required-access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ecr:GetAuthorizationToken",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "Repository",
+                      "Arn"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "RuntimeRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "tasks.apprunner.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "required-access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": [
+                    {
+                      "Ref": "RuntimeDatabaseSecret"
+                    },
+                    {
+                      "Ref": "GroqSecret"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:GetBucketPublicAccessBlock",
+                    "s3:GetBucketPolicyStatus"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "AssetBucket",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${AssetBucket.Arn}/erp-assets/*"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "VpcConnector": {
+      "Type": "AWS::AppRunner::VpcConnector",
+      "Properties": {
+        "VpcConnectorName": {
+          "Fn::Sub": "${AWS::StackName}-private"
+        },
+        "Subnets": [
+          {
+            "Ref": "PrivateSubnetA"
+          },
+          {
+            "Ref": "PrivateSubnetB"
+          }
+        ],
+        "SecurityGroups": [
+          {
+            "Ref": "ApplicationSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      },
+      "DependsOn": [
+        "PrivateRoute",
+        "PrivateAssociationA",
+        "PrivateAssociationB"
+      ]
+    },
+    "BuildLogs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/codebuild/${AWS::StackName}"
+        },
+        "RetentionInDays": 7,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "BuildRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "required-access",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${BuildLogs.Arn}:*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:GetObjectVersion",
+                    "s3:PutObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${SourceBucket.Arn}/*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:ListBucket",
+                    "s3:GetBucketLocation"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "SourceBucket",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "FrontendBucket",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${FrontendBucket.Arn}/*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ecr:GetAuthorizationToken",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:CompleteLayerUpload",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:PutImage",
+                    "ecr:UploadLayerPart",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "Repository",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "Database",
+                        "MasterUserSecret.SecretArn"
+                      ]
+                    },
+                    {
+                      "Ref": "RuntimeDatabaseSecret"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:PutSecretValue"
+                  ],
+                  "Resource": {
+                    "Ref": "RuntimeDatabaseSecret"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "cloudfront:CreateInvalidation"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2:CreateNetworkInterface",
+                    "ec2:DescribeDhcpOptions",
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeSecurityGroups",
+                    "ec2:DescribeVpcs"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:CreateNetworkInterfacePermission",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:network-interface/*"
+                  },
+                  "Condition": {
+                    "StringEquals": {
+                      "ec2:AuthorizedService": "codebuild.amazonaws.com",
+                      "ec2:Subnet": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${PrivateSubnetA}"
+                        },
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${PrivateSubnetB}"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "BuildProject": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-build"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "BuildRole",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "Type": "S3",
+          "Location": {
+            "Fn::Sub": "${SourceBucket}/sources/current.zip"
+          },
+          "BuildSpec": "deployment/aws/buildspec.yml"
+        },
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "Type": "LINUX_CONTAINER",
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/standard:7.0",
+          "PrivilegedMode": true,
+          "EnvironmentVariables": [
+            {
+              "Name": "ECR_REPOSITORY_URI",
+              "Value": {
+                "Fn::GetAtt": [
+                  "Repository",
+                  "RepositoryUri"
+                ]
+              }
+            },
+            {
+              "Name": "FRONTEND_BUCKET",
+              "Value": {
+                "Ref": "FrontendBucket"
+              }
+            },
+            {
+              "Name": "CLOUDFRONT_DISTRIBUTION_ID",
+              "Value": {
+                "Ref": "FrontendDistribution"
+              }
+            }
+          ]
+        },
+        "VpcConfig": {
+          "VpcId": {
+            "Ref": "VPC"
+          },
+          "Subnets": [
+            {
+              "Ref": "PrivateSubnetA"
+            },
+            {
+              "Ref": "PrivateSubnetB"
+            }
+          ],
+          "SecurityGroupIds": [
+            {
+              "Ref": "ApplicationSecurityGroup"
+            }
+          ]
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {
+              "Ref": "BuildLogs"
+            }
+          }
+        },
+        "TimeoutInMinutes": 30,
+        "QueuedTimeoutInMinutes": 30,
+        "ConcurrentBuildLimit": 1,
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "erpfusion"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Value": {
+        "Ref": "VPC"
+      }
+    },
+    "SourceBucket": {
+      "Value": {
+        "Ref": "SourceBucket"
+      }
+    },
+    "FrontendBucket": {
+      "Value": {
+        "Ref": "FrontendBucket"
+      }
+    },
+    "AssetBucket": {
+      "Value": {
+        "Ref": "AssetBucket"
+      }
+    },
+    "FrontendDistributionId": {
+      "Value": {
+        "Ref": "FrontendDistribution"
+      }
+    },
+    "FrontendURL": {
+      "Value": {
+        "Fn::Sub": "https://${FrontendDistribution.DomainName}"
+      }
+    },
+    "UserPoolId": {
+      "Value": {
+        "Ref": "UserPool"
+      }
+    },
+    "UserPoolClientId": {
+      "Value": {
+        "Ref": "UserPoolClient"
+      }
+    },
+    "CognitoURL": {
+      "Value": {
+        "Fn::Sub": "https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com"
+      }
+    },
+    "OidcIssuer": {
+      "Value": {
+        "Fn::Sub": "https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}"
+      }
+    },
+    "DatabaseHost": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Database",
+          "Endpoint.Address"
+        ]
+      }
+    },
+    "DatabaseName": {
+      "Value": "erpfusion"
+    },
+    "MasterSecretArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Database",
+          "MasterUserSecret.SecretArn"
+        ]
+      }
+    },
+    "RuntimeSecretArn": {
+      "Value": {
+        "Ref": "RuntimeDatabaseSecret"
+      }
+    },
+    "GroqSecretArn": {
+      "Value": {
+        "Ref": "GroqSecret"
+      }
+    },
+    "RepositoryUri": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Repository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "BuildProject": {
+      "Value": {
+        "Ref": "BuildProject"
+      }
+    },
+    "PullRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "PullRole",
+          "Arn"
+        ]
+      }
+    },
+    "RuntimeRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "RuntimeRole",
+          "Arn"
+        ]
+      }
+    },
+    "VpcConnectorArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "VpcConnector",
+          "VpcConnectorArn"
+        ]
+      }
+    }
+  }
+}

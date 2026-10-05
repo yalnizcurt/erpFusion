@@ -20,7 +20,19 @@ stay bound to their original evidence and do not become current merely because
 their historical status was approved. Preserve private authenticated downloads
 and verify checksums; do not regenerate a file silently during download.
 
-## What the current sandbox flow establishes
+## Pattern qualification binding
+
+Pattern-bound candidates and attempts retain the exact pattern contract and baseline versions.
+Release eligibility follows that pattern's runtime, required capabilities, allowed modes,
+assurance and test plan. Installation is optional where delivery is API/file/external/assisted.
+A source checksum or declared runtime type cannot substitute for missing native evidence.
+
+The execution worker can collect machine observations from installed adapters. The Publisher
+simulator remains `SIMULATED`, while the real Publisher transport observes only existing-report
+checks/runs. Native generated-candidate identity and installation remain unqualified. A native
+release policy requiring those assurances must block incomplete remote/manual evidence.
+
+## What the assisted sandbox flow establishes
 
 The configured `testing` contract provides a version and uniquely identified
 required cases with independent expected values. Evidence submission binds the
@@ -28,10 +40,11 @@ candidate checksum, reviewed source checksum, environment, connection configurat
 secret version and exact test-plan hash. The API compares entered case outcomes/
 actual values against that plan; humans supply the observations.
 
-Current records identify `ASSISTED_MANUAL`,
+Assisted records identify `ASSISTED_MANUAL`,
 `assurance=authenticated_tester_attestation`, and
-`remote_exact_bytes_verified=false`. Listing evidence explicitly reports automatic
-execution unsupported with `native_candidate_import_not_qualified`.
+`remote_exact_bytes_verified=false`. Assisted evidence listing does not certify native import.
+Use the separate attempt/adapter records for machine execution claims; preserve their
+operation-specific assurance and simulation labels.
 
 Sign-off requires an authorized tester/client authority and the eligible latest
 passing evidence for the current candidate/connection/plan. It creates an immutable

@@ -1,373 +1,425 @@
-"""Explicit seed loader for enterprise ERP profiles and demo projects."""
+"""Explicit, versioned development fixtures for the ERP registry.
 
+This module is never called by startup or a read endpoint. Existing resources
+are skipped as a whole: fixture loading cannot republish, repair, overwrite, or
+reactivate an administrator's configuration.
+"""
+
+from __future__ import annotations
+
+import hashlib
 import json
-from pathlib import Path
+from datetime import UTC, datetime
+from importlib.resources import files
+from typing import Any, Literal
+from uuid import NAMESPACE_URL, uuid5
 
-from sqlalchemy import select, func
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import ERPProfile, ERPProfileVersion, PromptVersion, Project, ProjectStatus
+from app.models import (
+    AdminAuditEvent,
+    ERPProfile,
+    ERPProfileVersion,
+    Project,
+    ProjectStatus,
+    PromptVersion,
+)
 from app.services.workflow import WorkflowEngine
 
-SEED_ERP_DEFINITIONS = [
-    {
-        "key": "oracle-fusion-cloud",
-        "name": "Oracle Fusion Cloud",
-        "display_name": "Oracle Fusion Cloud",
-        "vendor": "Oracle",
-        "product_version": "Cloud",
-        "description": "Production integration profile for Oracle Fusion Cloud ERP (Payables, Receivables, TCA).",
-        "dialect": "Oracle",
-        "adapters": {"SQL": "oracle_sql", "PKS": "oracle_plsql", "PKB": "oracle_plsql"},
-        "traceability_adapter": "oracle_attribute_lineage",
-        "sample_project": {
-            "name": "Oracle Fusion AP Invoices & Lines Outbound Feed",
-            "description": "Production integration package for AP Invoices & Lines with HZ_PARTIES supplier resolution and delta watermarking.",
-            "business_requirement": "Extract AP Invoices and itemized Lines for active suppliers created or modified in the last 24 hours. Include Supplier Name from HZ_PARTIES via VENDOR_ID. Output CSV delimited by '|' and generate PL/SQL package for database staging.",
-            "erp_schema_context": {
-                "tables": [
-                    {
-                        "name": "AP_INVOICES_ALL",
-                        "description": "Invoice header records in Oracle Fusion Payables",
-                        "columns": [
-                            {"name": "INVOICE_ID", "data_type": "NUMBER", "nullable": False, "primary_key": True},
-                            {"name": "INVOICE_NUM", "data_type": "VARCHAR2(50)", "nullable": False},
-                            {"name": "INVOICE_DATE", "data_type": "DATE", "nullable": False},
-                            {"name": "INVOICE_AMOUNT", "data_type": "NUMBER", "nullable": False},
-                            {"name": "PAYMENT_STATUS_FLAG", "data_type": "VARCHAR2(1)", "nullable": True},
-                            {"name": "VENDOR_ID", "data_type": "NUMBER", "nullable": True, "foreign_key": "HZ_PARTIES.PARTY_ID"},
-                            {"name": "CANCELLED_DATE", "data_type": "DATE", "nullable": True},
-                            {"name": "LAST_UPDATE_DATE", "data_type": "TIMESTAMP", "nullable": False},
-                        ],
-                    },
-                    {
-                        "name": "AP_INVOICE_LINES_ALL",
-                        "description": "Itemized lines for each invoice header",
-                        "columns": [
-                            {"name": "INVOICE_ID", "data_type": "NUMBER", "nullable": False, "foreign_key": "AP_INVOICES_ALL.INVOICE_ID"},
-                            {"name": "LINE_NUMBER", "data_type": "NUMBER", "nullable": False, "primary_key": True},
-                            {"name": "LINE_TYPE_LOOKUP_CODE", "data_type": "VARCHAR2(25)", "nullable": False},
-                            {"name": "AMOUNT", "data_type": "NUMBER", "nullable": False},
-                            {"name": "DESCRIPTION", "data_type": "VARCHAR2(240)", "nullable": True},
-                            {"name": "LAST_UPDATE_DATE", "data_type": "TIMESTAMP", "nullable": False},
-                        ],
-                    },
-                    {
-                        "name": "HZ_PARTIES",
-                        "description": "Trading Community Architecture (TCA) parties including vendors and suppliers",
-                        "columns": [
-                            {"name": "PARTY_ID", "data_type": "NUMBER", "nullable": False, "primary_key": True},
-                            {"name": "PARTY_NAME", "data_type": "VARCHAR2(360)", "nullable": False},
-                            {"name": "PARTY_NUMBER", "data_type": "VARCHAR2(30)", "nullable": True},
-                        ],
-                    },
-                ],
-                "foreign_keys": [
-                    {"from": "AP_INVOICE_LINES_ALL.INVOICE_ID", "to": "AP_INVOICES_ALL.INVOICE_ID"},
-                    {"from": "AP_INVOICES_ALL.VENDOR_ID", "to": "HZ_PARTIES.PARTY_ID"},
-                ],
-            }
-        }
-    },
-    {
-        "key": "sap-s4hana-cloud",
-        "name": "SAP S/4HANA Cloud",
-        "display_name": "SAP S/4HANA Cloud",
-        "vendor": "SAP",
-        "product_version": "2023 / Cloud",
-        "description": "Enterprise integration profile for SAP S/4HANA (FI/CO, MM, SD, Business Partner).",
-        "dialect": "HANA",
-        "adapters": {"SQL": "generic_json", "PKS": "generic_json", "PKB": "generic_json"},
-        "traceability_adapter": "generic_json",
-        "sample_project": {
-            "name": "SAP S/4HANA Accounts Payable Integration",
-            "description": "Outbound extraction package for SAP BKPF/BSEG Accounting Documents with Business Partner LFA1 enrichment.",
-            "business_requirement": "Extract Accounting Document Headers (BKPF) and Segment Items (BSEGK/BSEG) for vendor invoices. Join LFA1 to resolve Vendor Name. Output XML and SQL staging package.",
-            "erp_schema_context": {
-                "tables": [
-                    {
-                        "name": "BKPF",
-                        "description": "Accounting Document Header in SAP S/4HANA",
-                        "columns": [
-                            {"name": "BELNR", "data_type": "NCHAR(10)", "nullable": False, "primary_key": True},
-                            {"name": "BUKRS", "data_type": "NCHAR(4)", "nullable": False, "primary_key": True},
-                            {"name": "GJAHR", "data_type": "NUMC(4)", "nullable": False, "primary_key": True},
-                            {"name": "BLDAT", "data_type": "DATS", "nullable": False},
-                            {"name": "LIFNR", "data_type": "NCHAR(10)", "nullable": True, "foreign_key": "LFA1.LIFNR"},
-                        ],
-                    },
-                    {
-                        "name": "BSEG",
-                        "description": "Accounting Document Line Items in SAP S/4HANA",
-                        "columns": [
-                            {"name": "BELNR", "data_type": "NCHAR(10)", "nullable": False, "foreign_key": "BKPF.BELNR"},
-                            {"name": "BUZEI", "data_type": "NUMC(3)", "nullable": False, "primary_key": True},
-                            {"name": "WRBTR", "data_type": "CURR(13,2)", "nullable": False},
-                            {"name": "SGTXT", "data_type": "CHAR(50)", "nullable": True},
-                        ],
-                    },
-                    {
-                        "name": "LFA1",
-                        "description": "Vendor Master (General Section) in SAP",
-                        "columns": [
-                            {"name": "LIFNR", "data_type": "NCHAR(10)", "nullable": False, "primary_key": True},
-                            {"name": "NAME1", "data_type": "CHAR(35)", "nullable": False},
-                            {"name": "ORT01", "data_type": "CHAR(35)", "nullable": True},
-                        ],
-                    },
-                ],
-                "foreign_keys": [
-                    {"from": "BSEG.BELNR", "to": "BKPF.BELNR"},
-                    {"from": "BKPF.LIFNR", "to": "LFA1.LIFNR"},
-                ],
-            }
-        }
-    },
-    {
-        "key": "netsuite-erp",
-        "name": "NetSuite ERP",
-        "display_name": "NetSuite ERP",
-        "vendor": "Oracle NetSuite",
-        "product_version": "2024.1",
-        "description": "Cloud ERP integration profile for Oracle NetSuite (Transactions, Customers, Invoices, Payments).",
-        "dialect": "SuiteQL",
-        "adapters": {"SQL": "generic_json", "PKS": "generic_json", "PKB": "generic_json"},
-        "traceability_adapter": "generic_json",
-        "sample_project": {
-            "name": "NetSuite Customer Payment Sync",
-            "description": "Bi-directional customer payment and invoice status synchronization feed for NetSuite.",
-            "business_requirement": "Synchronize NetSuite Customer Payment transactions (transaction table) linked to Customer (entity) and TransactionLine items. Extract payment amounts, dates, and apply-to invoices.",
-            "erp_schema_context": {
-                "tables": [
-                    {
-                        "name": "Transaction",
-                        "description": "NetSuite Transaction header table",
-                        "columns": [
-                            {"name": "id", "data_type": "INTEGER", "nullable": False, "primary_key": True},
-                            {"name": "tranId", "data_type": "VARCHAR", "nullable": False},
-                            {"name": "trandate", "data_type": "DATE", "nullable": False},
-                            {"name": "entity", "data_type": "INTEGER", "nullable": False, "foreign_key": "Customer.id"},
-                            {"name": "foreigntotal", "data_type": "FLOAT", "nullable": False},
-                        ],
-                    },
-                    {
-                        "name": "Customer",
-                        "description": "NetSuite Customer entity table",
-                        "columns": [
-                            {"name": "id", "data_type": "INTEGER", "nullable": False, "primary_key": True},
-                            {"name": "companyName", "data_type": "VARCHAR", "nullable": False},
-                            {"name": "entityId", "data_type": "VARCHAR", "nullable": False},
-                        ],
-                    },
-                ],
-                "foreign_keys": [
-                    {"from": "Transaction.entity", "to": "Customer.id"},
-                ],
-            }
-        }
-    },
-    {
-        "key": "workday-financials",
-        "name": "Workday Financial Management",
-        "display_name": "Workday Financial Management",
-        "vendor": "Workday",
-        "product_version": "2024R1",
-        "description": "Enterprise cloud financial profile for Workday (General Ledger, Customer Accounts, Supplier Accounts).",
-        "dialect": "Workday RaaS / SQL",
-        "adapters": {"SQL": "generic_json", "PKS": "generic_json", "PKB": "generic_json"},
-        "traceability_adapter": "generic_json",
-        "sample_project": {
-            "name": "Workday Financial Journal Import & Export",
-            "description": "Automated ledger entry and journal line extraction integration for Workday Financials.",
-            "business_requirement": "Extract Accounting Journal Lines from Workday General Ledger with Ledger Account, Cost Center, and Debit/Credit amounts for financial reconciliation.",
-            "erp_schema_context": {
-                "tables": [
-                    {
-                        "name": "Journal_Entry_Header",
-                        "description": "Workday Accounting Journal Entry Header",
-                        "columns": [
-                            {"name": "Journal_Entry_ID", "data_type": "VARCHAR", "nullable": False, "primary_key": True},
-                            {"name": "Company_ID", "data_type": "VARCHAR", "nullable": False},
-                            {"name": "Accounting_Date", "data_type": "DATE", "nullable": False},
-                        ],
-                    },
-                    {
-                        "name": "Journal_Entry_Line",
-                        "description": "Workday Accounting Journal Line Detail",
-                        "columns": [
-                            {"name": "Journal_Entry_ID", "data_type": "VARCHAR", "nullable": False, "foreign_key": "Journal_Entry_Header.Journal_Entry_ID"},
-                            {"name": "Line_Number", "data_type": "INTEGER", "nullable": False, "primary_key": True},
-                            {"name": "Ledger_Account", "data_type": "VARCHAR", "nullable": False},
-                            {"name": "Debit_Amount", "data_type": "NUMERIC", "nullable": True},
-                            {"name": "Credit_Amount", "data_type": "NUMERIC", "nullable": True},
-                        ],
-                    },
-                ],
-                "foreign_keys": [
-                    {"from": "Journal_Entry_Line.Journal_Entry_ID", "to": "Journal_Entry_Header.Journal_Entry_ID"},
-                ],
-            }
-        }
-    },
-    {
-        "key": "dynamics-365-fo",
-        "name": "Microsoft Dynamics 365 F&O",
-        "display_name": "Microsoft Dynamics 365 F&O",
-        "vendor": "Microsoft",
-        "product_version": "10.0 / One Version",
-        "description": "Integration profile for Microsoft Dynamics 365 Finance & Operations (VendTable, PurchTable, CustTable).",
-        "dialect": "T-SQL / OData",
-        "adapters": {"SQL": "generic_json", "PKS": "generic_json", "PKB": "generic_json"},
-        "traceability_adapter": "generic_json",
-        "sample_project": {
-            "name": "Dynamics 365 Vendor Master Sync",
-            "description": "Vendor master data and purchase order status synchronization feed for Dynamics 365 F&O.",
-            "business_requirement": "Extract active Vendors from VendTable with associated Purchase Orders (PurchTable) and Line Items (PurchLine) for Procurement analysis.",
-            "erp_schema_context": {
-                "tables": [
-                    {
-                        "name": "VendTable",
-                        "description": "Dynamics 365 Finance Vendor Master table",
-                        "columns": [
-                            {"name": "AccountNum", "data_type": "NVARCHAR(20)", "nullable": False, "primary_key": True},
-                            {"name": "VendorName", "data_type": "NVARCHAR(100)", "nullable": False},
-                            {"name": "DataAreaId", "data_type": "NVARCHAR(4)", "nullable": False},
-                        ],
-                    },
-                    {
-                        "name": "PurchTable",
-                        "description": "Dynamics 365 Purchase Order Header",
-                        "columns": [
-                            {"name": "PurchId", "data_type": "NVARCHAR(20)", "nullable": False, "primary_key": True},
-                            {"name": "OrderAccount", "data_type": "NVARCHAR(20)", "nullable": False, "foreign_key": "VendTable.AccountNum"},
-                            {"name": "PurchStatus", "data_type": "INTEGER", "nullable": False},
-                        ],
-                    },
-                ],
-                "foreign_keys": [
-                    {"from": "PurchTable.OrderAccount", "to": "VendTable.AccountNum"},
-                ],
-            }
-        }
-    }
-]
+LifecycleStatus = Literal["DRAFT", "REVIEW", "PUBLISHED", "RETIRED"]
 
 
-async def ensure_seed_profiles(db: AsyncSession) -> ERPProfile:
-    """Ensure all seed enterprise ERP profiles exist and are published."""
-    first_profile = None
+class FixturePrompt(BaseModel):
+    """One immutable prompt resource included in a development manifest."""
 
-    for erp_def in SEED_ERP_DEFINITIONS:
-        result = await db.execute(select(ERPProfile).where(ERPProfile.key == erp_def["key"]))
-        profile = result.scalar_one_or_none()
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=255)
+    scope: Literal["ERP", "STAGE"]
+    stage: str = Field(min_length=1, max_length=80)
+    content: str = Field(min_length=1)
+    version: int = Field(ge=1)
+    status: LifecycleStatus
+    variables: list[str] = Field(default_factory=list)
+
+
+class FixtureProfileVersion(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    version: int = Field(ge=1)
+    status: LifecycleStatus
+    supported_artifact_types: list[str]
+    configuration: dict[str, Any]
+    prompts: list[FixturePrompt] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_stage_prompts(self) -> FixtureProfileVersion:
+        workflow = self.configuration.get("workflow", {})
+        if not isinstance(workflow, dict):
+            raise ValueError("A fixture workflow must be an object")
+        stages = workflow.get("stages", [])
+        if not isinstance(stages, list) or not stages:
+            raise ValueError("A fixture workflow needs a nonempty stage list")
+        configured: list[str] = []
+        for stage in stages:
+            if not isinstance(stage, dict) or not isinstance(stage.get("type"), str):
+                raise ValueError("Fixture stages need a string type")
+            if not stage["type"] or len(stage["type"]) > 80:
+                raise ValueError("Fixture stage names must be between 1 and 80 characters")
+            dependencies = stage.get("depends_on", [])
+            if not isinstance(dependencies, list) or any(
+                not isinstance(dependency, str) for dependency in dependencies
+            ):
+                raise ValueError("Fixture dependencies must be stage names")
+            configured.append(stage["type"])
+        if any(
+            dependency not in configured
+            for stage in stages
+            for dependency in stage.get("depends_on", [])
+        ):
+            raise ValueError("Fixture dependencies must reference configured stages")
+        if len(set(configured)) != len(configured):
+            raise ValueError("A fixture workflow must not repeat stage names")
+        if set(configured) != set(self.supported_artifact_types):
+            raise ValueError("Fixture artifact types must match its workflow stages")
+        if self.status == "PUBLISHED":
+            published_stages = {
+                prompt.stage for prompt in self.prompts if prompt.status == "PUBLISHED"
+            }
+            required = {stage.get("prompt_stage", stage["type"]) for stage in stages}
+            if not required.issubset(published_stages):
+                raise ValueError("Published fixtures need published prompts for every stage")
+        return self
+
+
+class FixtureProject(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=255)
+    description: str | None = None
+    business_requirement: str = Field(min_length=1)
+    erp_schema_context: dict[str, Any]
+
+
+class FixtureProfile(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(min_length=1, max_length=80)
+    name: str = Field(min_length=1, max_length=255)
+    display_name: str = Field(min_length=1, max_length=255)
+    vendor: str = Field(min_length=1, max_length=255)
+    product_version: str | None = None
+    description: str | None = None
+    status: LifecycleStatus
+    configuration: dict[str, Any]
+    profile_version: FixtureProfileVersion
+    sample_projects: list[FixtureProject] = Field(default_factory=list)
+    integration_patterns: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class FixtureManifest(BaseModel):
+    """Versioned data, rather than an ERP-specific generation registry."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    manifest_id: str = Field(pattern=r"^[a-z0-9][a-z0-9-]{0,79}$")
+    version: int = Field(ge=1)
+    description: str
+    profiles: list[FixtureProfile]
+
+    @model_validator(mode="after")
+    def validate_unique_keys(self) -> FixtureManifest:
+        keys = [profile.key for profile in self.profiles]
+        if len(set(keys)) != len(keys):
+            raise ValueError("Fixture profile keys must be unique")
+        for profile in self.profiles:
+            if profile.status != profile.profile_version.status:
+                raise ValueError("Fixture profile and initial version lifecycle must agree")
+            prompt_keys = [
+                (prompt.scope, prompt.name, prompt.version)
+                for prompt in profile.profile_version.prompts
+            ]
+            if len(set(prompt_keys)) != len(prompt_keys):
+                raise ValueError("Fixture prompt resource versions must be unique")
+        return self
+
+
+class SeedReport(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    manifest_id: str
+    manifest_version: int
+    manifest_checksum: str
+    profiles_created: int
+    profiles_skipped: int
+    prompts_created: int
+    projects_created: int
+    projects_skipped: int
+
+
+def read_fixture_manifest(name: str = "development-v1") -> FixtureManifest:
+    """Read a packaged manifest by a bounded identifier, without directory traversal."""
+    if (
+        not name
+        or len(name) > 80
+        or any(character not in "abcdefghijklmnopqrstuvwxyz0123456789-" for character in name)
+    ):
+        raise ValueError("Invalid fixture manifest identifier")
+    payload = files("app.cli").joinpath("fixtures", f"{name}.json").read_text(encoding="utf-8")
+    manifest = FixtureManifest.model_validate_json(payload)
+    if manifest.manifest_id != name:
+        raise ValueError("Fixture manifest identifier does not match its file")
+    return manifest
+
+
+async def load_development_fixtures(
+    db: AsyncSession,
+    *,
+    manifest: FixtureManifest,
+    app_env: str,
+    include_sample_projects: bool = False,
+) -> SeedReport:
+    """Add missing development fixtures inside the caller's transaction.
+
+    No schema operations or commit occur here. Existing profiles and their
+    versions/prompts are intentionally never modified or filled in. Pattern
+    fixtures can explicitly add a separate intelligence version. Sample
+    requests have deterministic IDs and are limited to the exact seed-owned,
+    published profile revision. Production use is rejected before any SQL.
+    """
+    if app_env != "development":
+        raise ValueError("Development fixtures are disabled outside APP_ENV=development")
+
+    checksum = hashlib.sha256(
+        json.dumps(manifest.model_dump(), sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    actor = f"fixture:{manifest.manifest_id}"
+    profiles_created = profiles_skipped = prompts_created = 0
+    projects_created = projects_skipped = 0
+
+    for definition in manifest.profiles:
+        profile = (
+            await db.execute(select(ERPProfile).where(ERPProfile.key == definition.key))
+        ).scalar_one_or_none()
+        profile_version: ERPProfileVersion | None
         if profile is None:
             profile = ERPProfile(
-                key=erp_def["key"],
-                name=erp_def["name"],
-                display_name=erp_def["display_name"],
-                vendor=erp_def["vendor"],
-                product_version=erp_def["product_version"],
-                description=erp_def["description"],
-                active=True,
-                status="PUBLISHED",
-                created_by="seed",
-                updated_by="seed",
-                configuration={"dialect": erp_def["dialect"], "schema_grounding_required": True},
+                **definition.model_dump(
+                    exclude={"profile_version", "sample_projects", "integration_patterns"}
+                ),
+                active=definition.status != "RETIRED",
+                created_by=actor,
+                updated_by=actor,
             )
             db.add(profile)
             await db.flush()
-
-        if first_profile is None:
-            first_profile = profile
-
-        version_result = await db.execute(select(ERPProfileVersion).where(
-            ERPProfileVersion.profile_id == profile.id, ERPProfileVersion.version == 1))
-        profile_version = version_result.scalar_one_or_none()
-        if profile_version is None:
-            stages = [
-                ("CONTEXT_ANALYSIS", [], "oracle_context_analysis" if erp_def["key"] == "oracle-fusion-cloud" else "generic_json", "CONTEXT_ANALYSIS"),
-                ("FDD", ["CONTEXT_ANALYSIS"], "oracle_fdd" if erp_def["key"] == "oracle-fusion-cloud" else "generic_json", "FDD"),
-                ("TDD", ["FDD"], "oracle_tdd" if erp_def["key"] == "oracle-fusion-cloud" else "generic_json", "TDD"),
-                ("SQL", ["TDD"], erp_def["adapters"]["SQL"], "SQL"),
-                ("PKS", ["SQL"], erp_def["adapters"]["PKS"], "CODE_GENERATION"),
-                ("PKB", ["SQL"], erp_def["adapters"]["PKB"], "CODE_GENERATION"),
-                ("DEPLOYMENT", ["PKS", "PKB"], "oracle_deployment" if erp_def["key"] == "oracle-fusion-cloud" else "generic_json", "DEPLOYMENT"),
-            ]
-            workflow_stages = [
-                {"type": t, "depends_on": d, "adapter": a, "prompt_stage": ps, "label": t.replace("_", " ")}
-                for t, d, a, ps in stages
-            ]
+            version_definition = definition.profile_version
             profile_version = ERPProfileVersion(
                 profile_id=profile.id,
-                version=1,
-                status="PUBLISHED",
-                supported_artifact_types=[x[0] for x in stages],
-                configuration={
-                    "workflow": {"stages": workflow_stages},
-                    "generation": {"strategy": "configured_adapters"},
-                    "validation": {
-                        "schema_conformity": True,
-                        "adapters": erp_def["adapters"],
-                        "cross_artifact_traceability": True,
-                        "traceability_adapter": erp_def["traceability_adapter"],
-                    },
-                },
-                created_by="seed",
-                updated_by="seed",
+                **version_definition.model_dump(exclude={"prompts"}),
+                published_at=(
+                    datetime.now(UTC) if version_definition.status == "PUBLISHED" else None
+                ),
+                created_by=actor,
+                updated_by=actor,
             )
             db.add(profile_version)
             await db.flush()
+            profiles_created += 1
+            _record_fixture_event(
+                db,
+                actor,
+                "FIXTURE_PROFILE_CREATED",
+                "ERP_PROFILE",
+                str(profile.id),
+                manifest,
+                checksum,
+            )
+            _record_fixture_event(
+                db,
+                actor,
+                "FIXTURE_VERSION_CREATED",
+                "ERP_PROFILE_VERSION",
+                str(profile_version.id),
+                manifest,
+                checksum,
+            )
+            for prompt_definition in version_definition.prompts:
+                prompt = PromptVersion(
+                    profile_version_id=profile_version.id,
+                    **prompt_definition.model_dump(),
+                    created_by=actor,
+                    updated_by=actor,
+                )
+                db.add(prompt)
+                await db.flush()
+                prompts_created += 1
+                _record_fixture_event(
+                    db,
+                    actor,
+                    "FIXTURE_PROMPT_CREATED",
+                    "PROMPT_VERSION",
+                    str(prompt.id),
+                    manifest,
+                    checksum,
+                )
+        else:
+            profiles_skipped += 1
+            profile_version = (
+                await db.execute(
+                    select(ERPProfileVersion).where(
+                        ERPProfileVersion.profile_id == profile.id,
+                        ERPProfileVersion.version == definition.profile_version.version,
+                    )
+                )
+            ).scalar_one_or_none()
 
-            # Seed stage prompts for Oracle profile
-            if erp_def["key"] == "oracle-fusion-cloud":
-                fixture_path = Path(__file__).resolve().parents[2] / "seed" / "oracle_fusion.prompts.json"
-                if fixture_path.exists():
-                    prompt_data = json.loads(fixture_path.read_text())
-                    for stage, content in prompt_data.items():
-                        res = await db.execute(select(PromptVersion.id).where(
-                            PromptVersion.profile_version_id == profile_version.id,
-                            PromptVersion.name == f"{stage} instructions", PromptVersion.version == 1))
-                        if res.scalar_one_or_none() is None:
-                            db.add(PromptVersion(
-                                scope="STAGE", profile_version_id=profile_version.id, name=f"{stage} instructions",
-                                stage=stage, content=content, version=1, status="PUBLISHED", variables=[],
-                                created_by="seed", updated_by="seed",
-                            ))
+        if definition.integration_patterns:
+            # Explicit pattern fixtures may ADD an intelligence version. They
+            # never change an existing product/profile version, prompt or asset.
+            if (
+                not profile_version
+                or profile_version.created_by != actor
+                or profile_version.configuration != definition.profile_version.configuration
+            ):
+                from sqlalchemy import func
 
-        profile.status = "PUBLISHED"
-        profile.active = True
-        await db.flush()
+                fixture_versions = await db.scalars(
+                    select(ERPProfileVersion)
+                    .where(
+                        ERPProfileVersion.profile_id == profile.id,
+                        ERPProfileVersion.created_by == actor,
+                    )
+                    .order_by(ERPProfileVersion.version.desc())
+                )
+                profile_version = next(
+                    (
+                        v
+                        for v in fixture_versions
+                        if v.status == "PUBLISHED"
+                        and v.updated_by == actor
+                        and v.configuration == definition.profile_version.configuration
+                        and v.supported_artifact_types
+                        == definition.profile_version.supported_artifact_types
+                    ),
+                    None,
+                )
+                if profile_version is None:
+                    number = (
+                        await db.scalar(
+                            select(func.max(ERPProfileVersion.version)).where(
+                                ERPProfileVersion.profile_id == profile.id
+                            )
+                        )
+                        or 0
+                    ) + 1
+                    profile_version = ERPProfileVersion(
+                        profile_id=profile.id,
+                        **definition.profile_version.model_dump(exclude={"prompts", "version"}),
+                        version=number,
+                        created_by=actor,
+                        updated_by=actor,
+                        published_at=datetime.now(UTC),
+                    )
+                    db.add(profile_version)
+                    await db.flush()
+                    for prompt_definition in definition.profile_version.prompts:
+                        db.add(
+                            PromptVersion(
+                                profile_version_id=profile_version.id,
+                                **prompt_definition.model_dump(),
+                                created_by=actor,
+                                updated_by=actor,
+                            )
+                        )
+                        prompts_created += 1
+                    _record_fixture_event(
+                        db,
+                        actor,
+                        "FIXTURE_VERSION_CREATED",
+                        "ERP_PROFILE_VERSION",
+                        profile_version.id,
+                        manifest,
+                        checksum,
+                    )
+            from app.services.integration_patterns import seed_pattern_definitions
 
-    # Seed sample projects for each ERP if database has 0 projects
-    proj_count_res = await db.execute(select(func.count(Project.id)))
-    if proj_count_res.scalar_one() == 0:
-        for erp_def in SEED_ERP_DEFINITIONS:
-            res = await db.execute(select(ERPProfile).where(ERPProfile.key == erp_def["key"]))
-            p_obj = res.scalar_one_or_none()
-            if not p_obj:
+            await seed_pattern_definitions(
+                db, profile, profile_version, definition.integration_patterns, actor
+            )
+        if not include_sample_projects:
+            continue
+        for sample in definition.sample_projects:
+            if (
+                not profile.active
+                or profile.status != "PUBLISHED"
+                or profile.created_by != actor
+                or profile_version is None
+                or profile_version.status != "PUBLISHED"
+                or profile_version.created_by != actor
+                or profile_version.updated_by != actor
+                or profile.updated_by != actor
+            ):
+                projects_skipped += 1
                 continue
-            ver_res = await db.execute(select(ERPProfileVersion).where(
-                ERPProfileVersion.profile_id == p_obj.id, ERPProfileVersion.status == "PUBLISHED"
-            ).order_by(ERPProfileVersion.version.desc()).limit(1))
-            pv_obj = ver_res.scalar_one_or_none()
-            if not pv_obj:
+            project_id = str(
+                uuid5(
+                    NAMESPACE_URL,
+                    f"erpfusion:{manifest.manifest_id}:{definition.key}:{sample.name}",
+                )
+            )
+            if await db.get(Project, project_id) is not None:
+                projects_skipped += 1
                 continue
-
-            sp_info = erp_def["sample_project"]
             project = Project(
-                name=sp_info["name"],
-                description=sp_info["description"],
-                business_requirement=sp_info["business_requirement"],
-                erp_schema_context=sp_info["erp_schema_context"],
-                erp_profile_id=p_obj.id,
-                erp_profile_version_id=pv_obj.id,
+                id=project_id,
+                **sample.model_dump(),
+                erp_profile_id=profile.id,
+                erp_profile_version_id=profile_version.id,
                 status=ProjectStatus.ACTIVE,
             )
             db.add(project)
             await db.flush()
+            await WorkflowEngine(db).initialize_project_artifacts(project)
+            projects_created += 1
+            _record_fixture_event(
+                db, actor, "FIXTURE_PROJECT_CREATED", "PROJECT", str(project.id), manifest, checksum
+            )
 
-            workflow = WorkflowEngine(db)
-            await workflow.initialize_project_artifacts(project)
-            await db.flush()
+    await db.flush()
+    return SeedReport(
+        manifest_id=manifest.manifest_id,
+        manifest_version=manifest.version,
+        manifest_checksum=checksum,
+        profiles_created=profiles_created,
+        profiles_skipped=profiles_skipped,
+        prompts_created=prompts_created,
+        projects_created=projects_created,
+        projects_skipped=projects_skipped,
+    )
 
-    return first_profile
+
+def _record_fixture_event(
+    db: AsyncSession,
+    actor: str,
+    action: str,
+    entity_type: str,
+    entity_id: str,
+    manifest: FixtureManifest,
+    checksum: str,
+) -> None:
+    db.add(
+        AdminAuditEvent(
+            actor=actor,
+            action=action,
+            entity_type=entity_type,
+            entity_id=entity_id,
+            details={
+                "manifest_id": manifest.manifest_id,
+                "manifest_version": manifest.version,
+                "manifest_checksum": checksum,
+            },
+        )
+    )

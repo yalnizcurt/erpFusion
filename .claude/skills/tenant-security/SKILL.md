@@ -1,6 +1,6 @@
 ---
 name: tenant-security
-description: Change or review erpFusion identity, client ownership, authorization, PostgreSQL row security, worker access, ERP credentials, private artifacts or allowed data destinations. Use when a task crosses a client boundary or changes how sensitive data is stored, exposed or transmitted.
+description: Change or review HighStudio identity, client ownership, authorization, PostgreSQL row security, worker access, ERP credentials, private artifacts or allowed data destinations. Use when a task crosses a client boundary or changes how sensitive data is stored, exposed or transmitted.
 ---
 
 # Tenant security
@@ -32,6 +32,13 @@ An ERP administrator can read every client's project. SQLite verifies RLS.
 Development identity headers or direct-test compatibility keys are production
 authentication. Browser logout immediately revokes every issued JWT. “No external
 telemetry” means security/audit records should be disabled.
+
+## Pattern architecture reference
+
+Read the [HighStudio pattern architecture](../../../docs/architecture/highstudio-integration-patterns.md)
+when a task changes pattern selection, approved baseline pins, target runtime or qualification
+claims. Reuse existing intelligence, ownership, revision and evidence services; installation
+is required only when the selected pattern contract requires it.
 
 ## Source entry points
 

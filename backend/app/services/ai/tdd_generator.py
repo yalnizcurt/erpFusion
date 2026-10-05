@@ -1,5 +1,5 @@
 """
-erpFusion — TDD Generation AI Pipeline
+HighStudio — TDD Generation AI Pipeline
 
 Generates a Technical Design Document from the approved FDD,
 context analysis, and ERP schema context.
@@ -53,5 +53,5 @@ Return ONLY the JSON object as specified in the system prompt."""
 
     logger.info("Running TDD generation pipeline...")
     result = await llm.generate_json(request)
-    logger.info(f"TDD generated: package={result.get('technical_architecture', {}).get('package_name', 'unknown')}")
+    logger.info("TDD generation completed")
     return result

@@ -1,8 +1,8 @@
 """Versioned prompts, knowledge, implementation packages, feedback, and run provenance."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -10,11 +10,18 @@ from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 
 class PromptVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "prompt_versions"
-    __table_args__ = (UniqueConstraint("scope", "profile_version_id", "name", "version", name="uq_prompt_scope_version"),)
+    __table_args__ = (
+        UniqueConstraint(
+            "scope", "profile_version_id", "name", "version", name="uq_prompt_scope_version"
+        ),
+    )
 
     scope: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
     profile_version_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("erp_profile_versions.id", ondelete="CASCADE"), nullable=True, index=True
+        String(36),
+        ForeignKey("erp_profile_versions.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     stage: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
@@ -28,11 +35,18 @@ class PromptVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class ERPAssetVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "erp_asset_versions"
-    __table_args__ = (UniqueConstraint("asset_id", "profile_version_id", "version", name="uq_erp_asset_profile_version"),)
+    __table_args__ = (
+        UniqueConstraint(
+            "asset_id", "profile_version_id", "version", name="uq_erp_asset_profile_version"
+        ),
+    )
 
     asset_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     profile_version_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("erp_profile_versions.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36),
+        ForeignKey("erp_profile_versions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     asset_kind: Mapped[str] = mapped_column(String(24), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -55,6 +69,9 @@ class FeedbackGuidance(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     project_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=True, index=True
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     profile_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("erp_profiles.id", ondelete="CASCADE"), nullable=True, index=True
     )
@@ -72,16 +89,40 @@ class GenerationRun(UUIDPrimaryKeyMixin, Base):
     project_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    erp_installation_id: Mapped[str | None] = mapped_column(
+        String(36),
+        ForeignKey("erp_installations.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    erp_environment_id: Mapped[str | None] = mapped_column(
+        String(36),
+        ForeignKey("erp_environments.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     artifact_type: Mapped[str] = mapped_column(String(80), nullable=False)
     profile_version_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("erp_profile_versions.id", ondelete="RESTRICT"), nullable=False, index=True
+        String(36),
+        ForeignKey("erp_profile_versions.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
     )
     model: Mapped[str] = mapped_column(String(128), nullable=False)
     resolved_context: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     provenance: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     status: Mapped[str] = mapped_column(String(24), default="COMPLETED", nullable=False)
+    actor_subject_id: Mapped[str | None] = mapped_column(ForeignKey("identity_subjects.id"))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error_code: Mapped[str | None] = mapped_column(String(80))
+    artifact_version_id: Mapped[str | None] = mapped_column(String(36))
+    output_content: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )
 
 
@@ -89,10 +130,19 @@ class AdminAuditEvent(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "admin_audit_events"
 
     actor: Mapped[str] = mapped_column(String(255), nullable=False)
+    actor_subject_id: Mapped[str | None] = mapped_column(
+        String(36),
+        ForeignKey("identity_subjects.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     action: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
     entity_type: Mapped[str] = mapped_column(String(80), nullable=False)
     entity_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     details: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

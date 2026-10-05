@@ -1,5 +1,5 @@
 """
-erpFusion — Deployment Package Generator AI Pipeline
+HighStudio — Deployment Package Generator AI Pipeline
 
 Generates a complete deployment package including installation instructions,
 compilation order, grants, synonyms, verification scripts, and rollback procedures
@@ -54,5 +54,5 @@ Return ONLY the JSON object as specified in the system prompt."""
 
     logger.info("Running deployment generation pipeline...")
     result = await llm.generate_json(request)
-    logger.info(f"Deployment package generated for {package_name}")
+    logger.info("Deployment package generation completed")
     return result

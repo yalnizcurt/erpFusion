@@ -19,6 +19,13 @@ from dated plans as if they were implemented request contracts.
   the compiler's prompt source.
 - `ERPAssetVersion` represents PACKAGE or KNOWLEDGE resources, with logical
   asset identity, version, metadata, text context and separately stored bytes.
+- `IntegrationPattern` identifies a HighRadius integration approach within a product.
+  `IntegrationPatternVersion` pins a published profile version, runtime/deliverable,
+  compatible environments, generation rules, adapter bindings and qualification/test policy.
+  `PatternBaseline` links exact approved `ERPAssetVersion` package records; do not duplicate
+  the baseline/intelligence stores. Published pattern versions are immutable.
+- New requests select a published compatible pattern version. Legacy nullable pattern pins
+  preserve older PL/SQL/profile projects and their evidence; do not infer a pattern for them.
 - Requests reference a profile ID and exact profile-version ID. Their selected
   client installation and execution environment are additional bindings.
 
@@ -39,6 +46,14 @@ prompt/asset lifecycle; do not mutate a published profile through a child endpoi
 The workflow enforces serial progression in the configured stage-list order in
 addition to declared dependencies. Stage names, output contracts, prompt stages,
 review roles and adapters are data, not a universal Oracle sequence.
+
+## Pattern baseline consumption
+
+[Pattern resolution](../../../../backend/app/services/integration_patterns.py) records the
+exact pattern contract and baseline IDs/versions/checksums. The compiler freezes bounded
+baseline content into the queued run. Installed `baseline_json` strategy version `1` modifies
+only allowed named files and preserves the other approved source files. Source construction
+is separate from vendor-native build/import qualification.
 
 ## Intelligence consumption
 

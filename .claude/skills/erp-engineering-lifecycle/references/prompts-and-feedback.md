@@ -15,6 +15,14 @@ SQL/PLSQL/deployment prompt-building helpers. Those helpers are exported but are
 not the current generation route's dispatch. Trace callers before extending
 them; changes there can leave actual product behavior unchanged.
 
+## Pattern context and baseline changes
+
+For pattern-bound projects, the compiler resolves the exact published pattern/profile
+contract and approved baseline asset versions; provenance records baseline checksums and
+strategy version. Frozen named-file baselines are separate from bounded relevant knowledge.
+Changes are permitted by the pattern generation rules, not by guessed vendor conventions.
+Published source baselines are not proof of qualified native builds or runtime support.
+
 ## Compiler contract
 
 The compiler resolves the request's exact ERP profile version. It combines

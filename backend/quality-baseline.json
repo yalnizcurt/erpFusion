@@ -1,0 +1,2052 @@
+{
+  "captured_on": "2026-10-01",
+  "owner": "Platform engineering",
+  "defect_register": "../docs/defect-test-register.md",
+  "policy": "Exact legacy diagnostics only. New diagnostics fail. Prune resolved entries; expanding the ledger requires review. New core/settings/provider/CLI modules must be clean.",
+  "diagnostics": [
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "74d0c818736651de71507a310958fbf013a67c25280cb35a3fe3547de2f81d04"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "F401",
+      "message": "`sqlalchemy.dialects.postgresql` imported but unused",
+      "source_hash": "0a8e43f99e73731c73adc56421c5b81ea36405ffc1ac414afb501944cbe81f8c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "E501",
+      "message": "Line too long (102 > 100)",
+      "source_hash": "bd2b0edb527a4a634567b6c4fb2810da40d1bc38497cdcb3900b8cdf823501d3"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "cbd77c339549ce36c7bcbb3a9b98be48d82f6ddfe4f4840dfb6fe2f3d3607b8f"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "bd0c607477a62dbcf6be216834bfc067dc6fb0789ca033542052bfbd3e0cbd15"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "cbd77c339549ce36c7bcbb3a9b98be48d82f6ddfe4f4840dfb6fe2f3d3607b8f"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260928_00_initial_application_schema.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "ed56431132f09851659e06906a3d04034e02fc20b4929dd7517c98943ca83ca1"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_01_erp_profiles_and_prompts.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "74d0c818736651de71507a310958fbf013a67c25280cb35a3fe3547de2f81d04"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_01_erp_profiles_and_prompts.py",
+      "code": "F401",
+      "message": "`sqlalchemy.dialects.postgresql` imported but unused",
+      "source_hash": "0a8e43f99e73731c73adc56421c5b81ea36405ffc1ac414afb501944cbe81f8c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "74d0c818736651de71507a310958fbf013a67c25280cb35a3fe3547de2f81d04"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "F401",
+      "message": "`sqlalchemy.dialects.postgresql` imported but unused",
+      "source_hash": "0a8e43f99e73731c73adc56421c5b81ea36405ffc1ac414afb501944cbe81f8c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "490e47f37194d45bdb09be4b208c5044699541f26e3ed6501a0e028db430f3bb"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "9b36d9305c5e8efb974d62dcb32b77b91b45135c0061cf08c8e7de1d4355200c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "b105342066981d0dfb75f81b9e7db9a981d7679bc9ec6cb690168bb5b4226111"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "659860c7f20f89649ebf078d17d3012a3e9b2bda729d48996c9c637153f31521"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (124 > 100)",
+      "source_hash": "5c4694b6b2291b81e241d769bddea199602113198872b20930bae5c8ed43f8a2"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (152 > 100)",
+      "source_hash": "5168bc1ab37827755dba84a03679a2e0d8e0b5368cf2e6ebb68fe92d8ba88e56"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (104 > 100)",
+      "source_hash": "5de011e6e7c3fd8e5a2c3d1b9d19e0c3013ac3c55345fbd3d16e79d3ab22c026"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (259 > 100)",
+      "source_hash": "cfd250df38aedc3015fe3458bc22a92130c3a45eff01e485cdc8869a22f4e5ee"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (239 > 100)",
+      "source_hash": "a65ee844dd3410e27cfc4d8c3fc4c5141670bde65557af935d25c14c570d5f14"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (225 > 100)",
+      "source_hash": "85719bd499ad772f2ae84087fed99da8a9595e89f63bfcd644e65aa406a113d3"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (212 > 100)",
+      "source_hash": "41a35f45003456a44e144935bfde95c49b11e0bf6b71f8b379cecea45d28a3e2"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (232 > 100)",
+      "source_hash": "c9ef0730595f9cca554b10b0e8d5f075c05f8b059e1d1d91fb5362c5c7d331a6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (223 > 100)",
+      "source_hash": "78f98d1de971e0643256dbe0acd1d890931e8c5f9865020415c54740dc55ced6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (245 > 100)",
+      "source_hash": "abde7576dd87bb2009012301bf9ca91546efeb700fa75d7fe8733ec5fa93087e"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (267 > 100)",
+      "source_hash": "c4738689bb89ae8ac8f19ca6648fa8422d5148863599559581c557e1067c1acb"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "48a726f9b4d8ea38f26d0da760f100472e4c8ccb4206cded4b7b0d54aa72652a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (127 > 100)",
+      "source_hash": "cad8f2107f4b1b4ebcf67421bd6cff8794320b7fb9105ed0d2940c476f95b545"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (113 > 100)",
+      "source_hash": "b39e507e807ffa5378bd4460910f647ef7cda136a4761099fd5520f97a9eb9ee"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "5c707c1cbf2bf857c91b8e0272c7222332152ba3d05fd8f40313161431f6edbd"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (157 > 100)",
+      "source_hash": "7523bb99e0ebd54f91eaedd1f0c66d8f9565e64df988a0cd08536e3681c12b8a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (157 > 100)",
+      "source_hash": "4c9b3c25b28fe3a405560ab4282e873d47dc0e4c4782af5ee3ac150a3daa857f"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (102 > 100)",
+      "source_hash": "b1fb692db0657b14bd142cd575ef82942fd4f8290ead6df65a6cbedf7b0665b7"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (182 > 100)",
+      "source_hash": "8740f68771499a120aab4d4af152c003364b816575e65d8adc62068f71c14aa8"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (141 > 100)",
+      "source_hash": "9669e0be758fc2045d5caf5f972c6c9a6ba3624db25496b1c9743cb8c03f0578"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "8ae24739b437a009e4805a263a5f7f915a6372bb24fe35af877b80be288afdfb"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (102 > 100)",
+      "source_hash": "d8ce1ed0257d3ad7c560851ea418112a661a80145d814741252b74fa98bd597c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "6a15d62a9955d7f734e50cfeb9ff484c95a56ed27a93aad23678f1b1f41bc3d6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (120 > 100)",
+      "source_hash": "cd3cc2b75a0d63a1f39cc02b0f8f25af80f5088b026ce7696e8e72ef9ea2c9c1"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "377f4ccfe5f88591afdeead921345f30151ad9405f01ad1b53a9d89b3dd4d67d"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (118 > 100)",
+      "source_hash": "9fd521f0a637b83dc22ce9f56e22c80f9c55b27a9dd5cc505b6dac151f4e7ac0"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (110 > 100)",
+      "source_hash": "68fa4c962d5ccc4fb65b73ff35eab834f65719563be3ae3fc31bb5c3e79ba768"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (123 > 100)",
+      "source_hash": "8bade2b529c4de14cea92973476e077bb2de93f96595a79ccf568bd134260edf"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (123 > 100)",
+      "source_hash": "049642679ddedda824307746f34019949951eba54ea71f02ae4e779141a091df"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (107 > 100)",
+      "source_hash": "49b4c17a13baa6d446e99f71f5b7cb7baaa5bd39e0c699a7d5c5f7f6da9bedb8"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (166 > 100)",
+      "source_hash": "7ef3387d46c59675b6139876ef4a8ea12d1e0fe31f3578d7a15508c9b1e8bf4b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (158 > 100)",
+      "source_hash": "38358e3e06ab0b318b2acb95354481cf61ec0d42a115519a4a92f673fbb92fa7"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (121 > 100)",
+      "source_hash": "8b357b92f65b33b6276b6c3960200b4fc4011bea070ed46536025d4efce9da6a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "65b859bad22cf9a3365fe98d6a8eb1c2837c58a804964e82bb6d92dca36da6ff"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "75ee3a72a85fb3671de0b6a2a53486891690b2189326a3c52754dc28ea067731"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (110 > 100)",
+      "source_hash": "b90db406de39aa62e7232b4121b7c575935c09cadab664d94d7da72c1043003b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (121 > 100)",
+      "source_hash": "1e54d936edd89eaa6d697d25caacc6d963363d4495fa03046eb1c49a428ce950"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (145 > 100)",
+      "source_hash": "000e3fe92a445205fc0fcc4365fa9f0a57005c4994564366fba95109aa76358b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (105 > 100)",
+      "source_hash": "8862299effc9debbd902669eec091f75695e38191f096c07f00f550e8818895a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (141 > 100)",
+      "source_hash": "ae8b815fefbb2660d98174a2bb6f6e8eb2fe583897b0dbd6a05145e02b893281"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "290cf1eefd5f5164dc25d4b5f4d6d103a93d72d348b6023a62b080b7474c20f6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (143 > 100)",
+      "source_hash": "d4f6e0971231937542558ba320eb1ce5146b0344f34df47c2cc65942c344fc4d"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "c53d579ec08254a63b25e5edc9d93ad0cb5bd652ac75b67d3ec1bfe03759b5f2"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (110 > 100)",
+      "source_hash": "54435fe5fc2b4000c7fb2ac9e6adb1d35fba089c23cd651378095d1deaf6df93"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (125 > 100)",
+      "source_hash": "de0c4cfa614c4b5c5b29598792d15d0ff143fc1fa71930bd850717b666bf339e"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (114 > 100)",
+      "source_hash": "f9a0af3740bdc5c61268d5988b4b101caae6acc557b5da35bc637702da166610"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "3e405379deaa252c1b9b96f6bf9c30459550af5aeb20bd1f3ba8d3762c7670e8"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "3822aafb351c12dd107e387612d526a7360b120998e9bdb19e54b7f6b90238cf"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (121 > 100)",
+      "source_hash": "3ebe4c9b6cfb9cddfb533267d92211aef93037fa14133cb749d8e4bb43e3234b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "13faf6276c6d5d235f6daf71a81e8c4d28b9f3ece7a7a1eab148b3ae1907757f"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "3e91a3495d1cd31d455b910a85e67956be9c0187749978989f7a702524faf5f8"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (145 > 100)",
+      "source_hash": "000e3fe92a445205fc0fcc4365fa9f0a57005c4994564366fba95109aa76358b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (105 > 100)",
+      "source_hash": "8862299effc9debbd902669eec091f75695e38191f096c07f00f550e8818895a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (141 > 100)",
+      "source_hash": "3034c66f1bd071b3a0d6268c64ba9681ea74904fd3c9a99115b8cdda80f9e7b7"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (117 > 100)",
+      "source_hash": "93577576a17ba28a258232ae5f9156b369a30185f240e2256647c5d42bdb1dd1"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "15fcae935360c02a79cd9ad7c1ed98e3a838fd43199b7a71691a9eaf02443e5a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "4c8aedd93d62de0a64c3e7fca9cea091328454a7855a43844e9f978a1a741645"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "fb3a508aac07cfa66ca0095d7fdcd7ba818d866cf8c541440a71a5aa3e393f62"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (145 > 100)",
+      "source_hash": "000e3fe92a445205fc0fcc4365fa9f0a57005c4994564366fba95109aa76358b"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (120 > 100)",
+      "source_hash": "1b1bd2cd6272e229d0caf78309246763d6f871b2d139cc67356caf70582b4da5"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (122 > 100)",
+      "source_hash": "a6cfdefef58e2988f1eb58c98b0c261ad50bfe0a9baeda49f593ad184e7aaab1"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (123 > 100)",
+      "source_hash": "a396cc1e072adba2042992f6e798f7a6535876d81f5d2cf854d5748bf9f0668c"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (117 > 100)",
+      "source_hash": "0b7eb00667176e88766110ad2e5e595706ca744861fd59a8fd0d62c6ca28395a"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (128 > 100)",
+      "source_hash": "d03120877497b0352e00231ae35065cf9df4118cd9a61dab58c7f338d50741a6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (137 > 100)",
+      "source_hash": "b0c433ac5c52dadbe245b70e9157fd2b811daab1bce201f391fe2cbc42ece1ce"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "2fcdfbbc1e4353731c1a879e523d81c08ac1cf4b8d17290f5e07920343647aff"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (105 > 100)",
+      "source_hash": "36ec5c6bb8ccbc8ddb4b3d2eea1d7184117ed0eac32262e2d71420c07265db07"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (160 > 100)",
+      "source_hash": "5ab1b971d53b4f0d67e1e749f9ef54ac7481fbb474283da94817026f8038aca4"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "52dfddca3d9355ce08a0f238b7f0664972ecf94ba874a37c3dd1a8f5061c0c08"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "5a6d446bd65c8a3bfc14aa4896a2d04a5ab5f58bcc61f62ca10487fe9ac4de57"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (125 > 100)",
+      "source_hash": "526aff39823216981038d7a68f3a5ede27757f59633b5f11afd6c38f1588fc5e"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (114 > 100)",
+      "source_hash": "2593e351d1c3a218dd47ea9f979152311b7fd557451727c285db137a6fb90bf6"
+    },
+    {
+      "tool": "ruff",
+      "file": "alembic/versions/20260929_02_configurable_erp_platform.py",
+      "code": "E501",
+      "message": "Line too long (132 > 100)",
+      "source_hash": "40064aec5c22b10074a7e439543d5099c3fa70fd668f453024273e6e393ba3b8"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP017",
+      "message": "Use `datetime.UTC` alias",
+      "source_hash": "9bd925be9ca05e5074bac6fab821c18f281d8c5f2cec5aec703ec141a3e41ac6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP017",
+      "message": "Use `datetime.UTC` alias",
+      "source_hash": "9bd925be9ca05e5074bac6fab821c18f281d8c5f2cec5aec703ec141a3e41ac6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP017",
+      "message": "Use `datetime.UTC` alias",
+      "source_hash": "ace7f0f80ee69799b90de07ed74672b1e518d72e4e2ce15b0d6f7b8fcbaabf04"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class ProjectStatus inherits from both `str` and `enum.Enum`",
+      "source_hash": "1dd983451e761b990a3ea481157f7cbf46ac60290a5cf053d647620a519f055f"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class ArtifactType inherits from both `str` and `enum.Enum`",
+      "source_hash": "5d5fe0df763702a79c3e9c8eef82cf18b5d55a513a5395862d625ea297a3f80a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class GateStatus inherits from both `str` and `enum.Enum`",
+      "source_hash": "6e17f15d2504c490be90c054019ddfe440dd85d42130bd478342a6117eef68e9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class VersionState inherits from both `str` and `enum.Enum`",
+      "source_hash": "384fc99ccd23720bf7dd3f545ed0557332a28c6e90e505004d36c319a036e64d"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class AuditAction inherits from both `str` and `enum.Enum`",
+      "source_hash": "b06343d39c9418b0825f881c7a782b5f3f745f7f27f65159acbb6d3b1f6a57ac"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class ValidationCategory inherits from both `str` and `enum.Enum`",
+      "source_hash": "8b021398b0393e4f8e827a4a40ee3683ac14f8392c21fb690cd0fbeda0abf6ca"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/base.py",
+      "code": "UP042",
+      "message": "Class ValidationStatus inherits from both `str` and `enum.Enum`",
+      "source_hash": "08e1700cdb0b42934beb2674ed3fd8248f1a2d52a7e539f71a2312df0db22e80"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/erp_profile.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "1c80ee441a56d69acae99266605441b0bb38a078dd24cafe32771d718f2b86a4"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/erp_profile.py",
+      "code": "E501",
+      "message": "Line too long (104 > 100)",
+      "source_hash": "cea7f5ddc8826cb291603eb91a98891a1942d01bb69fade3f842b4eeb0f03062"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/models/validation.py",
+      "code": "UP017",
+      "message": "Use `datetime.UTC` alias",
+      "source_hash": "9bd925be9ca05e5074bac6fab821c18f281d8c5f2cec5aec703ec141a3e41ac6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "UP035",
+      "message": "`typing.Dict` is deprecated, use `dict` instead",
+      "source_hash": "45dff5da79752975956b864520097b0fdfc83d4c8da65cc50636da263919b5e7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "18e0be4879fbb0db8499aa5d5cddb2c3631dc0553049b8c262e11376b19194a1"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "a0527da1c806c9de63ad789ae52774df3282bbe5cab0ed0a8da5ee5be60623bd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "10246963e060b0031122f7bd124b39ed03e984e0e4ee7bd07f0a00c202a7299b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "40a2776e837570f829b8d21681a619e12d68383dd23cd41fb3e727f9e8daeb90"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "E501",
+      "message": "Line too long (147 > 100)",
+      "source_hash": "d4fb77b37c54a97a181a18b5d2794f959f752e7691e601cf5c488e35462c2929"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/deployment_generator.py",
+      "code": "E501",
+      "message": "Line too long (113 > 100)",
+      "source_hash": "bd056d9143fa5e4fa244f608c149bce60f5154144d7a26cb032eedadf0723982"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (107 > 100)",
+      "source_hash": "3e313db2ff23f271ea75ce1a020c66962c38d434138676b43e90425ea57f8352"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (114 > 100)",
+      "source_hash": "f6bd821c029d2dae5bd163403e7a75729f356b2dd985015593bdcf2a1a47cbc0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "2db99f4796208b32df0204ec25857ff2c8aa81763e7484929220073bac8707a5"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "62a323660040d52bc0b14a8caeaa1f15b6ac4009af700badfb48d47092ad6719"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "92c00b408aa3da54aa3967e59076ccabed61ea85324d4b4effdc9a9bbcb85d25"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (271 > 100)",
+      "source_hash": "6e47581e2a75e8bc6ed2c62298f1e65f1e12ab59713f7e6f39c2870437bb74f9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (106 > 100)",
+      "source_hash": "05bd62c747f0db5b226cd9f138c142694c863fa09f6140540cca3f24a9ed6ee0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "1a5f78d1c061c98a5774a26fa0518ee6fa37fcfadf0af3f5e6f928b4b0b17a1e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "2252be44446ed4a66a2bc7edcd7063a4cced54f74a13ad8daca479f98aa026b9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (209 > 100)",
+      "source_hash": "2ad926035365c228715ddf9dc9c00e7bb56b958f5a4e641c7a0a13606730cf76"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (104 > 100)",
+      "source_hash": "c3604c7b4af069430c0d2e65459305513334e5c95dfbea5d1281ae22e6a2ea95"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (125 > 100)",
+      "source_hash": "becf8409f924f2b1c4c190f204567725ce2496d68f8103f57fe41c3b7dcf0a45"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (110 > 100)",
+      "source_hash": "b1d645ce634b3ac56bf133f752d0111acd505020b89174fa75bf83567417a06b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (131 > 100)",
+      "source_hash": "b6c32af90083830bbebbe875332d6de0ab4eea5d699bcd56f7dfd9bfd2771a77"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "bbab4d62fe5787d0890c0033bc61e056737c19b40b494ee6007db89f5a0bf194"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "7bfe1b2ee7b62646d3dce5b62f6b443ffad0620aa4598cb1db8c77439cd1829f"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (122 > 100)",
+      "source_hash": "582396d67bc4feba43e42f11354cc7f7fc42c73d96d1195d8533ab82d58d64ba"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (124 > 100)",
+      "source_hash": "91193bc632d11fb0051ffd75f94ff117167be41fec72a02c57250c5a5b87354e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (128 > 100)",
+      "source_hash": "e603ab6b4f5350130b8a2e72374de1df474a546216d1a2d8204b47b275d63559"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/plsql_generator.py",
+      "code": "E501",
+      "message": "Line too long (127 > 100)",
+      "source_hash": "e19a9ec195e28bbe58c94c7193ba3633f414927833b422421ed8fdc34b18293d"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/ai/sql_generator.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "41319ddedbc4ef742165172d45465a05bb69c3e6cc538d1a99765bb693cf2336"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "UP035",
+      "message": "`typing.Dict` is deprecated, use `dict` instead",
+      "source_hash": "45dff5da79752975956b864520097b0fdfc83d4c8da65cc50636da263919b5e7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "3d9647b3a2d48382b214bf313be01dbd7238218d341b1fadac50ae9ef0becc59"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (129 > 100)",
+      "source_hash": "4b0c0bdecc577541313a387aad4c77c97d676496b7d3f860c21ec539f2d27536"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (112 > 100)",
+      "source_hash": "b040c1528787a183e8f56c9c74703fa6a1b19878a5f6caeeb9f7d18384d7287e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "F841",
+      "message": "Local variable `user_lower` is assigned to but never used",
+      "source_hash": "ab7e281ffd70b6421fceebaa7f5aa2748b67142dcaa5e28f8a4416e2a0cdf0ba"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "e005c41c06eca686a8fdbc0641c3bc9e2b8f4dd9feb2650ed80340f571d419d8"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (196 > 100)",
+      "source_hash": "4d3c6d647a25716e4110fb7082370459d2a988d24a1b523f729a7bfa1c90f73e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (130 > 100)",
+      "source_hash": "30fca5250cc6d9d33bd64355301b9ee7c2d0a69f9908bc696b837fad8726d519"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (135 > 100)",
+      "source_hash": "96043e1e2d04dea4b8363f8b9194311ba897405938857d4758f2eff509066acd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (120 > 100)",
+      "source_hash": "10caed9a67fc412b80b6005d46d0c01bd7aef86630beac6c07a0cbd021a3dd1a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (136 > 100)",
+      "source_hash": "9195f8988357fee981a778f5c4314e0dcf0feacd0977b22170c7ce39598704cc"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (153 > 100)",
+      "source_hash": "c9a9b4a0fafa514340af24869788966b73a7bfa270599a52ab491809ba2cf8b9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (132 > 100)",
+      "source_hash": "fa9e8f2e15b327a4cbd79bee5de3c9e799ffbc37d47d94db6b4e7adcfbd34080"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (155 > 100)",
+      "source_hash": "63da785dee580b20aff86ec231f2ad8f61322bfb0c3154b94e0faf944b085aee"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (126 > 100)",
+      "source_hash": "401b3604418a51a6142f739308edcbe9840a52a03b52cfd28a40b8651ad205d0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (133 > 100)",
+      "source_hash": "38cf405710763e85fbf34e48f0a7cd2dd99340eee548ca0f9b5a3c979d0c7402"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (155 > 100)",
+      "source_hash": "0f4fe5268dd31a311e0e2f1a7497aedd578a0cb4122f4fdc88b9975a4d1516f7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (117 > 100)",
+      "source_hash": "1090d74c77b3b84306dde441aeaa9099333cd60dcfab2338eb4f8b7891af92f2"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (137 > 100)",
+      "source_hash": "66b300432c6bd1e8c878566abe6f61b73768e89e1bbd98582f1a8dd362f186cd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (137 > 100)",
+      "source_hash": "559d2b2ec1818ddfd117c45b71ece483e867d9f3c09b21f2d4a2f57e5d10477c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (143 > 100)",
+      "source_hash": "b01f6c6c4a0c9ff784ee1f319aa7ef87c007bb0a5359dd86de10b260f607ebd0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (152 > 100)",
+      "source_hash": "f74ca5df8575423a2ab380c744d36779074b2c6e6e597bb9bf32fc5935d5dac4"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (105 > 100)",
+      "source_hash": "f38595e4d76ed81912706c9e5fcf57769c5fcf27beb2b7c73eed74cdbec5e9c5"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "ee71515c1a9459873e52bb01a5bf8bc3f704e17e9c6cae0afabb7609562fcb9e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "a12001182befb589294af26033ef1bc51dc4e48a96fd8b577d09b07d42fd613f"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (113 > 100)",
+      "source_hash": "5c727dfaa1031b57062cdbb2be0a84c7cfe4ba6400dfd18f6550e775092daec7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (166 > 100)",
+      "source_hash": "70d000e9f24f1351d5ca8456b0f136cee46c97e40d3fbf34170cc2bc188a951f"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "5dbdf69d9d4f69555b779ce90df1d16ef2cf320b79dcbee07bd929e3188642d7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (325 > 100)",
+      "source_hash": "bcb585bb6581d176d46b5b68a37f8a729fd556d183137e8b5f569f4957cc22cb"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (363 > 100)",
+      "source_hash": "529b6c9861492f9891202d14a0e2b54caf32bff3a9cd134c04d0557ac2dcbdde"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (366 > 100)",
+      "source_hash": "295530fbb25b33b012d0919939bda0b92280c23c8183a2d441afee72b6a5f8ba"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (371 > 100)",
+      "source_hash": "51e775d554fd058b1c25f45d2791ed5252db216366d7f9bc9c8b2b2fad949035"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (370 > 100)",
+      "source_hash": "12b8a1c6cb041eb0149521e8a1701483a5a4ca02ad551e32d5acd61d1d5fddd4"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (337 > 100)",
+      "source_hash": "1e4d741c2d1572dab61421c22c1a9ed3682c63b1cfa28204fd520703e479279a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (357 > 100)",
+      "source_hash": "b288f07cc0aa1d83e0d47e15a441ac4c0623039b440220e410691057e1933eaf"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (386 > 100)",
+      "source_hash": "a54e50c1747a06b71ad2bcc5e1165b17e9305620e59ce0250be9f7bb80b6f0ec"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (147 > 100)",
+      "source_hash": "382ddc5e01f64b3bc6da82a2549221569c0aa56f43ec264d7fd0213be56ab1ab"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (227 > 100)",
+      "source_hash": "c779926d6af7c91f341fffdb6dfa8f6c2781cc951597d2da6c6889b124e044d1"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (171 > 100)",
+      "source_hash": "8dc35c984bc412455f875edb8156fde4f546e6e62216e49c3a58dcd385bf3ad6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (170 > 100)",
+      "source_hash": "7177ef6e01299174b19e7bc0fb54de8df57b87b1b782d4daf8202fa2eba76362"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (214 > 100)",
+      "source_hash": "c8b763300d9e0dc62420f5301507eda6ef3f9c69e41229b04b5ff8ada68261b6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (171 > 100)",
+      "source_hash": "08d6db05affd1a95690e6ebfba6000723781c338753a4de68215a46b78df836b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (187 > 100)",
+      "source_hash": "082f554544ec769caab388d430447e4f2883964594d186a337378cd029195e51"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (127 > 100)",
+      "source_hash": "c7a509a3b97dbb673b3d9e87ccf68ac45112db35b134f102fdd96392a7aea2ad"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (120 > 100)",
+      "source_hash": "40c0e297dc634daa421b9d292ad61a06338fe3f6acdff8391714f3b8f33a65e1"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (139 > 100)",
+      "source_hash": "a0db1859727b01a1e6bf01b40dd8a90341b3b34771dfed5e838f77c7881441e7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (112 > 100)",
+      "source_hash": "5a3c777feafeabc0c708e401e27bec81adb81d97b4a4ed57889df9568f5cf19d"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (258 > 100)",
+      "source_hash": "f193b9ef9272876361397189b04c911c5a7c64a351bd404a34e6c8b9f282c32b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (252 > 100)",
+      "source_hash": "6368dd3b134d9686054cf1754e4660dc72561b2131a9230de33fa52ad27e36d3"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (148 > 100)",
+      "source_hash": "d7384b7a07fc425acf1bc8ef08c5617f628b1aace54d191714092f5e2cdb6b1e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (157 > 100)",
+      "source_hash": "ff8f7a8214c6f28f4ef14d001049bd1c767b529f36c7a1213601098685b05b83"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (154 > 100)",
+      "source_hash": "f26d7cf1a7c42ac54815f70db62e1ba609e6244b75a20d6547669ac26cb2ce30"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (156 > 100)",
+      "source_hash": "08d27bdcc89366e8b58e2e69ae2f046db4c9bc02f66f66db81050d61d32f6e0e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (149 > 100)",
+      "source_hash": "1707c3243359731c9851a0a7cac1a128dfc62e0c2868e9ca88ae7442ddf5f2e4"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (156 > 100)",
+      "source_hash": "0ae8df630dc766c71274fd5a67bc61f05f7bd55bcef41313d5faf4bb8054daf0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (151 > 100)",
+      "source_hash": "2ee1ead3ac3944952882a33e7cc6938c8e6749abfb4e0a8937262b30bce77df5"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (166 > 100)",
+      "source_hash": "0bd08ff9544e1e011c85a22e8def9f42142d19f59b8bbb885f3e2ab93ee7f15b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "W291",
+      "message": "Trailing whitespace",
+      "source_hash": "02b803965ff9d1a21f69720a3b0fd9f997ce8529d2c47c6abad65e4b82f5002c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "W291",
+      "message": "Trailing whitespace",
+      "source_hash": "2a69cfaa41b091868195ad6e180a490c50906bbfa4065f453dec08498da3f959"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "W291",
+      "message": "Trailing whitespace",
+      "source_hash": "510fc9a850517152fa803a73b1cd9bcba37d95e78b510e64a699418f041c47cd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (151 > 100)",
+      "source_hash": "f6c2a0b801e23dbd805d17ffa04ee4a78ce9b4e103e4638cb399086f0360220d"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "W291",
+      "message": "Trailing whitespace",
+      "source_hash": "65431e712409f5465aee4a9b8ebbf4ed3de1a5dc78c836969b53b326ece6e92c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (130 > 100)",
+      "source_hash": "c78b80b855f6fd704af087546c8cd0000b079361d616e27794ca6b6ea5be145f"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (244 > 100)",
+      "source_hash": "398facb083a69894d5e405c94bcd381f8c0c0137baf8d5f2e6ba53d5ced4c574"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (206 > 100)",
+      "source_hash": "e118b853e02215d7edb42ea0c6ba4ab5d33512d7cdf9572f259bc4940154e896"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (154 > 100)",
+      "source_hash": "0512a4853d2ca0ca79f9c017dc56ef2d3bb26f089fb64d55ce5f8365137d006b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (166 > 100)",
+      "source_hash": "76253ad13919848b023c9d5a06437f4df3a8c613b3dcec78ab1cf669134a012d"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (235 > 100)",
+      "source_hash": "c08e5aecadd61a1cd10b25956f9cd89fc9ddd992d387f012de4d4fb0943a6109"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (230 > 100)",
+      "source_hash": "9f9a76108f1a119aad3ea1be1b9192add572e1fa56202a7943acd50d6c7031c9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (220 > 100)",
+      "source_hash": "ed3929e4bce2ec7e9c62c3c541030e1c3fd46f21ea3b8902dffd9c9343cc801a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (234 > 100)",
+      "source_hash": "debdfece4a5b1b69b951f4d7e13ee9039f521ae4f307c723c6da71b2d245ecb5"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (117 > 100)",
+      "source_hash": "96bacc99e4a866eb9958f689e7dcf29f2f136aa45a3d71377aa25e1c68aa3c47"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "478261175f66a87bfb744aa5d11e71ea8fec38669d576f8353240b0f5e3aed57"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (127 > 100)",
+      "source_hash": "bbee6601caa44a2db1e4cf03cf941278414d6e47e9ad58375316b72e0bfe8101"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/llm/mock.py",
+      "code": "E501",
+      "message": "Line too long (126 > 100)",
+      "source_hash": "e6dcef9130030186fc31de76cdfad536532b74b7b0ddc75047fcffe218e78aa8"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/prompt_compiler.py",
+      "code": "E501",
+      "message": "Line too long (154 > 100)",
+      "source_hash": "5723c15f4a956859a9f0108d1b45376e750e5c7f62d7d665f6463aad68a7d8fc"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/prompt_compiler.py",
+      "code": "E501",
+      "message": "Line too long (159 > 100)",
+      "source_hash": "73cbb4e4c65b74e7b401b0b31a3883d127c16637606a70d9cae0d62baa528e8b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/__init__.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "d53497886c0ebd68dacf314e3708f428316e7bb15108431aef7392d4b7cc011e"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP035",
+      "message": "`typing.Dict` is deprecated, use `dict` instead",
+      "source_hash": "98866b0b78dc2054876f9e1f4447ddb35fb3572cc8160a94676318f1176816a6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP035",
+      "message": "`typing.List` is deprecated, use `list` instead",
+      "source_hash": "98866b0b78dc2054876f9e1f4447ddb35fb3572cc8160a94676318f1176816a6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP035",
+      "message": "`typing.Tuple` is deprecated, use `tuple` instead",
+      "source_hash": "98866b0b78dc2054876f9e1f4447ddb35fb3572cc8160a94676318f1176816a6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "F401",
+      "message": "`app.models.base.ValidationCategory` imported but unused",
+      "source_hash": "eb94795d9b8f99244913aaff8fc9189af60d29943abc45224d3193dea9dd168b"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP045",
+      "message": "Use `X | None` for type annotations",
+      "source_hash": "94f35a944f344f9dbb6e95fcfd0916197d968fd9fb05cb4b5019e92de0500a32"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "94f35a944f344f9dbb6e95fcfd0916197d968fd9fb05cb4b5019e92de0500a32"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "239d272f244edcc77a93ddb9e5da913886c9c7cd339f848c10953d5ef7db7ae6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "19a8cd0871584f6c9c0b23cdcd915642b34c4fd74ecc955cf6357154a66d9315"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "8375c9fd99efc09b56c824cac6658eb91641e70665fe4176072de409be2ea2b2"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `tuple` instead of `Tuple` for type annotation",
+      "source_hash": "99fae080fac403e41fd3ed4d3227ed25029391496852c825a33b7ffe64a2a05c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "99fae080fac403e41fd3ed4d3227ed25029391496852c825a33b7ffe64a2a05c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "99fae080fac403e41fd3ed4d3227ed25029391496852c825a33b7ffe64a2a05c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "42497049bb494726fd134c2ad304306eb3cafd06fac564ecb079a0eab41136f9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "9505061fb9ac1d1db28f7b81436c5b930fd04e4126f46ba14e0be1681899f32a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (111 > 100)",
+      "source_hash": "89a97b9ede5b4c9b4fd82e8def72d24c199b59b07a4c876d657cb49a3d60a988"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "9f2071eb0881ba97f0b84af6f37e9c4d4a485c1c96813fe982f352ab12c0a06c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `tuple` instead of `Tuple` for type annotation",
+      "source_hash": "9f2071eb0881ba97f0b84af6f37e9c4d4a485c1c96813fe982f352ab12c0a06c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "13e2fb63fd98d637e7ea0849248ae5a1d90948cd1e625e0d8f5b2b927f05b019"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (101 > 100)",
+      "source_hash": "fa3753afe9c3504a1222b2cd9002da20410ac4117f0b5b8828b895ebda3f790c"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (104 > 100)",
+      "source_hash": "f1bf2646a93d8f8b2d68cba2ea3bd4e13cb5d343c4be03f3da3ad1ad87235a03"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (113 > 100)",
+      "source_hash": "934e3fdd34a6fd84a1f81281cafb1c1ba821ffd7355b5fd9b6821852bab887f8"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (116 > 100)",
+      "source_hash": "d6074108f32caf2e54751a7b2457f97f5b037689b7c54fca3e99404265360545"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "1f9241624551915d98bfb1ec69cc84e6cd149d60b2353b59322ddd323ae25edb"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (125 > 100)",
+      "source_hash": "a734251c96f0d7314fd80ec50da12ccb4662737932b25c2ed0d527494e12aec9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "58e29fc68352e28655c82cfd3c04bb198882a718f35e66f3cf8e7cb12db99638"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (115 > 100)",
+      "source_hash": "4ebe5aebf34bafb49645fbfe92d480f73eb5c5577e4cbd6cacb165d26454de58"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (129 > 100)",
+      "source_hash": "533a9eef7c1d93f0cbf2f2fbbe0695487d7a2974ee8dcd26b975f16d8814e055"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (123 > 100)",
+      "source_hash": "7be4cec525f74632f629d32e551a4f2afd31e359dbc9acb6518b24fa8fcc9b30"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "69c6d4279bff198d27a153ad80ee50fa11aaab9be5c9f0282a621621aa6e1ce7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "28a6e96abfd966a8ecba8ca40b00ce220b984648d2f205e8ca704c391b49c0a3"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "f8cb9bbcce3c55792447fc24018a691774f1923552a5d223c5fd35bd40cbb232"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "e193c347433d2696314e5c375c302af79d5dee661ad45a05b753b855237523f0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "0804f5b5e48653993709fcb1b4e3d00c487bab3d28fdcba9beda0c2adcb976cd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `tuple` instead of `Tuple` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "42497049bb494726fd134c2ad304306eb3cafd06fac564ecb079a0eab41136f9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (109 > 100)",
+      "source_hash": "cf4b92da205549d92cacb36dde092b1eaa881eb6c441c2c734a707bc4d16cb34"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (130 > 100)",
+      "source_hash": "ab9a7b85ed72d3e82989deb174e10dec93ea8c48cace56573c0d55c9d6dd2adb"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (144 > 100)",
+      "source_hash": "53d3ed1b426131095eeb4cb7d7dd907b1a9b69577e80762f9852f0b6796addc7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "e193c347433d2696314e5c375c302af79d5dee661ad45a05b753b855237523f0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `tuple` instead of `Tuple` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "0fc4909481ea4202f2e5ffc7b9310de20da17075b75859e1450940380dabbbe0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "42497049bb494726fd134c2ad304306eb3cafd06fac564ecb079a0eab41136f9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (122 > 100)",
+      "source_hash": "ba3fe18e7b95c27f25a527d9ddcb3ecae5b265edead8a5cebae8c1364021cac1"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (122 > 100)",
+      "source_hash": "c9e06518122583e9cfedb43b739d41834ae39485f35c3db154d41a24543f82a7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (110 > 100)",
+      "source_hash": "09f23c82d4f992b2526ec3b0507532ab549001f08ef90d60e7ab475ed9649aa1"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (108 > 100)",
+      "source_hash": "fe03265abcdcc5c7a03fe4d5db375515973a80d7b3cb71d35b260abacb06bcdf"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (105 > 100)",
+      "source_hash": "c2391810b257a80eb94af2559e9e5e80d24971d558da11d319efe1d0fda8ca97"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "e193c347433d2696314e5c375c302af79d5dee661ad45a05b753b855237523f0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "d7b220fbde95ecc0741a81366ef786869d8a16005790ab05c4156f938d435de7"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP045",
+      "message": "Use `X | None` for type annotations",
+      "source_hash": "55393fd689ea254fa9636b228bb93970de92bf386721546db4cd20c2b8ac0085"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "55393fd689ea254fa9636b228bb93970de92bf386721546db4cd20c2b8ac0085"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP045",
+      "message": "Use `X | None` for type annotations",
+      "source_hash": "a256758cd7ffe7f969beab3b8211c0db9baa47f667c445353ccd532a787dafcd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "a256758cd7ffe7f969beab3b8211c0db9baa47f667c445353ccd532a787dafcd"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `tuple` instead of `Tuple` for type annotation",
+      "source_hash": "89a8f1046450dd395ee3a4d2c65fae2968519672b0de7ba02ceb3c780cfc7e0a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "89a8f1046450dd395ee3a4d2c65fae2968519672b0de7ba02ceb3c780cfc7e0a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "89a8f1046450dd395ee3a4d2c65fae2968519672b0de7ba02ceb3c780cfc7e0a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `dict` instead of `Dict` for type annotation",
+      "source_hash": "89a8f1046450dd395ee3a4d2c65fae2968519672b0de7ba02ceb3c780cfc7e0a"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "UP006",
+      "message": "Use `list` instead of `List` for type annotation",
+      "source_hash": "42497049bb494726fd134c2ad304306eb3cafd06fac564ecb079a0eab41136f9"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (104 > 100)",
+      "source_hash": "e623a673994b33d2bc4bd2c7826cb0f6120ade124b867f95ae2fef69137c4400"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (124 > 100)",
+      "source_hash": "10a99f8c8d3b675750c578cb4a6610fa4f3b957e0a3cbc35541acd4628f47ba6"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (135 > 100)",
+      "source_hash": "061510df059fae135f582cd4cb1f9681cbac8018f63bab40c9a6b98ea11521c2"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/engine.py",
+      "code": "E501",
+      "message": "Line too long (119 > 100)",
+      "source_hash": "e193c347433d2696314e5c375c302af79d5dee661ad45a05b753b855237523f0"
+    },
+    {
+      "tool": "ruff",
+      "file": "app/services/validation/strategies.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "65c3b7673a08088cd82e23b2316ff91f792d46837a9b38e78a77507719ff0e85"
+    },
+    {
+      "tool": "ruff",
+      "file": "tests/test_validation.py",
+      "code": "I001",
+      "message": "Import block is un-sorted or un-formatted",
+      "source_hash": "db7b0741c94798db5932296122312b7b87d6e5a9e2ee29833a9949d1f774f40b"
+    },
+    {
+      "tool": "ruff",
+      "file": "tests/test_validation.py",
+      "code": "F401",
+      "message": "`pytest` imported but unused",
+      "source_hash": "db7b0741c94798db5932296122312b7b87d6e5a9e2ee29833a9949d1f774f40b"
+    },
+    {
+      "tool": "ruff",
+      "file": "tests/test_validation.py",
+      "code": "E501",
+      "message": "Line too long (103 > 100)",
+      "source_hash": "d5f86837e285ebd3ed7fb5880e6536573acf04992ea445b74134651753e3e24a"
+    },
+    {
+      "tool": "ruff",
+      "file": "tests/test_validation.py",
+      "code": "E501",
+      "message": "Line too long (112 > 100)",
+      "source_hash": "f29a59a60534400f2dee377d242f242d433f2aef12a9fc9e4a5f351f70de6e42"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"profile_id\"",
+      "source_hash": "0e48cbf445620c39d4d469e3c9a0c54fe0d6a58baa2a6b146bbbca0bb5b59033"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"status\"",
+      "source_hash": "4c95eeaafb7bd617755ab2d7b57ac51e3ac5e5b6e8f8c9c0b9321d8f4b0a5baa"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"profile_id\"",
+      "source_hash": "0e48cbf445620c39d4d469e3c9a0c54fe0d6a58baa2a6b146bbbca0bb5b59033"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"status\"",
+      "source_hash": "e56be050645bcdbb148d57083b41b776bc825eabd7d0bcce5d4a52186512fa1d"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"status\"",
+      "source_hash": "4c95eeaafb7bd617755ab2d7b57ac51e3ac5e5b6e8f8c9c0b9321d8f4b0a5baa"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "union-attr",
+      "message": "Item \"None\" of \"ERPProfileVersion | None\" has no attribute \"status\"",
+      "source_hash": "e56be050645bcdbb148d57083b41b776bc825eabd7d0bcce5d4a52186512fa1d"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "assignment",
+      "message": "Incompatible types in assignment (expression has type \"TarInfo\", variable has type \"ZipInfo\")",
+      "source_hash": "655a0244e63356e9c3cfb4828f9088178fb5e713381f501c6960a0b3dbccc013"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "attr-defined",
+      "message": "\"ZipInfo\" has no attribute \"isfile\"",
+      "source_hash": "aa304dbef446982c6b86a8d15820ef6cea938d75fd4113be5192db6e52560c8f"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "attr-defined",
+      "message": "\"ZipInfo\" has no attribute \"size\"",
+      "source_hash": "aa304dbef446982c6b86a8d15820ef6cea938d75fd4113be5192db6e52560c8f"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "attr-defined",
+      "message": "\"ZipInfo\" has no attribute \"name\"",
+      "source_hash": "aa304dbef446982c6b86a8d15820ef6cea938d75fd4113be5192db6e52560c8f"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "assignment",
+      "message": "Incompatible types in assignment (expression has type \"IO[bytes] | None\", variable has type \"IO[bytes]\")",
+      "source_hash": "64aaa24263d5187f10072ebb21720b698202577fc9797b9c36ab5605abb15310"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "arg-type",
+      "message": "Argument 1 to \"extractfile\" of \"TarFile\" has incompatible type \"ZipInfo\"; expected \"str | TarInfo\"",
+      "source_hash": "64aaa24263d5187f10072ebb21720b698202577fc9797b9c36ab5605abb15310"
+    },
+    {
+      "tool": "mypy",
+      "file": "app/api/erp_profiles.py",
+      "code": "attr-defined",
+      "message": "\"ZipInfo\" has no attribute \"name\"",
+      "source_hash": "fb4a7d0b1d1e0204d78cfd65c1d043833ac2f3438718878f8f9541aababa1c19"
+    }
+  ]
+}

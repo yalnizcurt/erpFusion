@@ -33,6 +33,10 @@ backend/artifacts/
 
 # SQLite dev database
 *.db
+*.db-*
+*.db.*.bak
+*.sqlite
+*.sqlite-*
 
 # Node.js (frontend)
 node_modules/

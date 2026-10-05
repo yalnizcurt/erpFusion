@@ -5,18 +5,22 @@ Configured for async SQLAlchemy with PostgreSQL.
 """
 
 import asyncio
+import ssl
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from alembic import context
 from app.config import get_settings
 from app.models import Base
 
 # Alembic Config object
 config = context.config
-config.set_main_option("sqlalchemy.url", get_settings().database_url.replace("%", "%%"))
+database_url = config.attributes.get("database_url")
+if database_url is None:
+    database_url = get_settings().database_url
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 
 # Set up logging
 if config.config_file_name is not None:
@@ -42,17 +46,21 @@ def run_migrations_offline() -> None:
 
 def do_run_migrations(connection) -> None:
     """Run migrations against a live connection."""
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(connection=connection, target_metadata=target_metadata, render_as_batch=True)
     with context.begin_transaction():
         context.run_migrations()
 
 
 async def run_async_migrations() -> None:
     """Run migrations in async mode."""
+    ca_file = config.attributes.get("database_ssl_ca_file", get_settings().database_ssl_ca_file)
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args={"ssl": ssl.create_default_context(cafile=ca_file)}
+        if ca_file and database_url.startswith("postgresql")
+        else {},
     )
 
     async with connectable.connect() as connection:

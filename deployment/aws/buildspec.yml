@@ -1,0 +1,83 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    BUILD_TARGET: all
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+      nodejs: 22
+    commands:
+      - python3 -m pip install --no-cache-dir --disable-pip-version-check uv==0.11.17
+  pre_build:
+    commands:
+      - |
+        set -euo pipefail
+        case "$BUILD_TARGET" in image|frontend|migrate|all) ;; *) echo "Invalid BUILD_TARGET" >&2; exit 2 ;; esac
+        : "${AWS_DEFAULT_REGION:?AWS_DEFAULT_REGION is required}"
+        if [[ "$BUILD_TARGET" == image || "$BUILD_TARGET" == all ]]; then
+          : "${ECR_REPOSITORY_URI:?ECR_REPOSITORY_URI is required}"
+          export IMAGE_TAG="${IMAGE_TAG:-build-${CODEBUILD_BUILD_NUMBER}}"
+          [[ "$IMAGE_TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]] || { echo "Invalid IMAGE_TAG" >&2; exit 2; }
+          aws ecr get-login-password --region "$AWS_DEFAULT_REGION" |
+            docker login --username AWS --password-stdin "${ECR_REPOSITORY_URI%%/*}"
+        fi
+        if [[ "$BUILD_TARGET" == frontend || "$BUILD_TARGET" == all ]]; then
+          : "${FRONTEND_BUCKET:?FRONTEND_BUCKET is required}"
+          : "${VITE_API_BASE_URL:?VITE_API_BASE_URL is required}"
+          python3 - <<'PY'
+        import os
+        from urllib.parse import urlsplit
+        names = (
+            "VITE_API_BASE_URL", "VITE_OIDC_ISSUER", "VITE_OIDC_CLIENT_ID",
+            "VITE_OIDC_AUTHORIZATION_ENDPOINT", "VITE_OIDC_TOKEN_ENDPOINT",
+            "VITE_OIDC_LOGOUT_ENDPOINT",
+        )
+        if any(not os.environ.get(name, "").strip() for name in names):
+            raise SystemExit("Frontend API and OIDC configuration is incomplete")
+        endpoints = []
+        for name in names:
+            if name == "VITE_OIDC_CLIENT_ID":
+                continue
+            value = urlsplit(os.environ[name])
+            if (value.scheme != "https" or not value.hostname or value.username
+                    or value.password or value.query or value.fragment):
+                raise SystemExit("Frontend endpoint configuration must use secure HTTPS URLs")
+            if name.endswith("ENDPOINT"):
+                endpoints.append((value.scheme, value.hostname, value.port))
+        if len(set(endpoints)) != 1:
+            raise SystemExit("Frontend authentication endpoint origins must match")
+        PY
+        fi
+  build:
+    commands:
+      - |
+        set -euo pipefail
+        if [[ "$BUILD_TARGET" == image || "$BUILD_TARGET" == all ]]; then
+          uv sync --project backend --locked --extra dev --extra aws
+          backend/.venv/bin/python backend/scripts/check_quality.py
+          env APP_ENV=test AUTH_MODE=development LLM_PROVIDER=mock DEMO_MODE=true GROQ_API_KEY= ERP_ADMIN_API_KEY= PYTHONPATH=backend DATABASE_URL=sqlite+aiosqlite:///:memory: backend/.venv/bin/python -m pytest backend/tests -q
+          docker build --pull --platform linux/amd64 --tag "$ECR_REPOSITORY_URI:$IMAGE_TAG" .
+          docker push "$ECR_REPOSITORY_URI:$IMAGE_TAG"
+        fi
+        if [[ "$BUILD_TARGET" == migrate || "$BUILD_TARGET" == all ]]; then
+          uv sync --project backend --locked --no-dev --extra aws
+          backend/.venv/bin/python deployment/aws/migrate.py
+        fi
+        if [[ "$BUILD_TARGET" == frontend || "$BUILD_TARGET" == all ]]; then
+          npm --prefix frontend ci --no-audit --no-fund
+          npm --prefix frontend run typecheck
+          npm --prefix frontend run lint
+          npm --prefix frontend test
+          npm --prefix frontend run build
+          # ponytail: retain older hashed assets for open browser sessions; add release retention when storage warrants it.
+          aws s3 sync frontend/dist/assets "s3://$FRONTEND_BUCKET/assets/" --cache-control 'public,max-age=31536000,immutable' --only-show-errors
+          aws s3 sync frontend/dist "s3://$FRONTEND_BUCKET/" --exclude 'assets/*' --exclude index.html --cache-control no-cache --only-show-errors
+          aws s3 cp frontend/dist/index.html "s3://$FRONTEND_BUCKET/index.html" --cache-control no-cache --content-type text/html --only-show-errors
+          if [[ -n "${CLOUDFRONT_DISTRIBUTION_ID:-}" ]]; then
+            aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths '/*' --output json
+          fi
+        fi

@@ -1,4 +1,4 @@
-"""erpFusion — AI Services Package"""
+"""HighStudio — AI Services Package"""
 
 from app.services.ai.context_analyzer import run_context_analysis
 from app.services.ai.deployment_generator import run_deployment_generation

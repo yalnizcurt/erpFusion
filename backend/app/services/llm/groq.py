@@ -1,17 +1,18 @@
 """
-erpFusion — Groq LLM Provider
+HighStudio — Groq LLM Provider
 
 Implements the LLM provider interface using Groq's OpenAI-compatible API.
 Uses httpx for async HTTP calls to avoid additional SDK dependencies.
 """
 
-import logging
 import asyncio
+import logging
 import re
+from typing import Any
 
 import httpx
 
-from app.config import get_settings
+from app.config import Settings, get_settings, secret_is_configured
 from app.services.llm.base import LLMProvider, LLMRequest, LLMResponse
 
 logger = logging.getLogger("erpfusion.llm.groq")
@@ -19,15 +20,19 @@ logger = logging.getLogger("erpfusion.llm.groq")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
+class GroqProviderError(RuntimeError):
+    """Safe provider failure; never contains provider bodies or generated content."""
+
+
 class GroqProvider(LLMProvider):
     """Groq Cloud API provider using OpenAI-compatible endpoint."""
 
-    def __init__(self):
-        settings = get_settings()
+    def __init__(self, settings: Settings | None = None) -> None:
+        settings = settings or get_settings()
         self.api_key = settings.groq_api_key
         self.model = settings.groq_model
-        if not self.api_key or self.api_key == "your_groq_api_key_here":
-            logger.warning("GROQ_API_KEY not set — LLM calls will fail")
+        if not secret_is_configured(self.api_key):
+            raise ValueError("GROQ_API_KEY_MISSING: configure a live provider credential.")
 
     async def generate(self, request: LLMRequest) -> LLMResponse:
         """Send a chat completion request to Groq."""
@@ -36,7 +41,7 @@ class GroqProvider(LLMProvider):
             "Content-Type": "application/json",
         }
 
-        payload = {
+        payload: dict[str, Any] = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": request.system_prompt},
@@ -51,7 +56,19 @@ class GroqProvider(LLMProvider):
         logger.info(f"Groq request: model={self.model}, temp={request.temperature}")
 
         async with httpx.AsyncClient(timeout=120.0) as client:
-            resp = await client.post(GROQ_API_URL, json=payload, headers=headers)
+            effective_payload = payload
+
+            async def post(body: dict[str, Any]) -> httpx.Response:
+                nonlocal effective_payload
+                effective_payload = body
+                try:
+                    return await client.post(GROQ_API_URL, json=body, headers=headers)
+                except httpx.TimeoutException:
+                    raise GroqProviderError("GROQ_TIMEOUT") from None
+                except httpx.HTTPError:
+                    raise GroqProviderError("GROQ_UNAVAILABLE") from None
+
+            resp = await post(payload)
 
             # Groq may reject an otherwise valid request when the account's
             # token-per-minute bucket is temporarily full. Honor its retry
@@ -70,7 +87,7 @@ class GroqProvider(LLMProvider):
                 delay = min(max(delay, 0.5), 30.0)
                 logger.warning("Groq rate limit reached; retrying once after %.1fs", delay)
                 await asyncio.sleep(delay)
-                resp = await client.post(GROQ_API_URL, json=payload, headers=headers)
+                resp = await post(payload)
 
             # Some Groq model/runtime combinations return a 400 when the
             # constrained JSON decoder cannot complete an otherwise valid
@@ -85,10 +102,14 @@ class GroqProvider(LLMProvider):
                 except (ValueError, AttributeError):
                     detail, code = "", ""
                 if code == "failed_generation" or "Failed to generate JSON" in detail:
-                    fallback_payload = {key: value for key, value in payload.items() if key != "response_format"}
+                    fallback_payload = {
+                        key: value for key, value in payload.items() if key != "response_format"
+                    }
                     fallback_payload["temperature"] = 0.0
-                    logger.warning("Groq constrained JSON generation failed; retrying once in JSON-prompt mode")
-                    resp = await client.post(GROQ_API_URL, json=fallback_payload, headers=headers)
+                    logger.warning(
+                        "Groq constrained JSON generation failed; retrying once in JSON-prompt mode"
+                    )
+                    resp = await post(fallback_payload)
 
             # On lower TPM tiers Groq can return 413 when input tokens plus
             # the requested completion budget exceed the minute allowance.
@@ -108,32 +129,74 @@ class GroqProvider(LLMProvider):
                             "Groq token budget exceeded; retrying once with max_tokens=%s",
                             smaller_budget,
                         )
-                        resp = await client.post(GROQ_API_URL, json=payload, headers=headers)
+                        resp = await post(payload)
 
             if resp.status_code != 200:
-                try:
-                    error = resp.json().get("error", {})
-                    detail = str(error.get("message") or error.get("code") or "")
-                except (ValueError, AttributeError):
-                    detail = ""
-                detail = re.sub(r"org_[A-Za-z0-9]+", "[redacted]", detail)
-                detail = re.sub(r"(?i)Bearer\s+\S+", "Bearer [redacted]", detail)
-                logger.error("Groq API returned HTTP %s: %s", resp.status_code, detail[:500])
-                raise RuntimeError(
-                    f"Groq API returned HTTP {resp.status_code}; check provider limits or configuration."
-                )
+                # Provider error bodies may echo customer inputs or credentials.
+                code = {
+                    401: "GROQ_AUTHENTICATION_FAILED",
+                    403: "GROQ_ACCESS_DENIED",
+                    404: "GROQ_MODEL_UNAVAILABLE",
+                    413: "GROQ_TOKEN_BUDGET_EXCEEDED",
+                    429: "GROQ_THROTTLED",
+                }.get(resp.status_code, "GROQ_UNAVAILABLE")
+                logger.warning("Groq invocation failed code=%s", code)
+                raise GroqProviderError(f"{code}: HTTP {resp.status_code}")
 
-            data = resp.json()
+            try:
+                data = resp.json()
+                choice = data["choices"][0]
+                message = choice["message"]
+                finish_reason = choice["finish_reason"]
+                content = message["content"]
+                if finish_reason in {"length", "max_tokens"}:
+                    raise GroqProviderError("GROQ_OUTPUT_TRUNCATED")
+                if finish_reason != "stop":
+                    raise GroqProviderError("GROQ_OUTPUT_REJECTED")
+                if (
+                    not isinstance(content, str)
+                    or not content.strip()
+                    or len(content.encode("utf-8")) > 1048576
+                ):
+                    raise ValueError
+                usage_data = data["usage"]
+                usage = {
+                    "input_tokens": usage_data["prompt_tokens"],
+                    "output_tokens": usage_data["completion_tokens"],
+                    "total_tokens": usage_data["total_tokens"],
+                }
+                if any(type(value) is not int or value < 0 for value in usage.values()):
+                    raise ValueError
+                model = data.get("model", self.model)
+                if not isinstance(model, str) or not model:
+                    raise ValueError
+                request_id = resp.headers.get("x-request-id", data.get("id", ""))
+                if not isinstance(request_id, str) or not re.fullmatch(
+                    r"[A-Za-z0-9_-]{1,128}", request_id
+                ):
+                    request_id = ""
+            except GroqProviderError:
+                raise
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError, UnicodeError):
+                raise GroqProviderError("GROQ_RESPONSE_INVALID") from None
 
-        choice = data["choices"][0]
-        usage = data.get("usage", {})
+        inference_config = {
+            key: effective_payload[key]
+            for key in ("temperature", "max_tokens", "response_format")
+            if key in effective_payload
+        }
 
         return LLMResponse(
-            content=choice["message"]["content"],
-            model=data.get("model", self.model),
-            usage={
-                "input_tokens": usage.get("prompt_tokens", 0),
-                "output_tokens": usage.get("completion_tokens", 0),
+            content=content,
+            model=model,
+            usage=usage,
+            raw_response={
+                "provider": "groq",
+                "api": "chat.completions",
+                "request_id": request_id,
+                "model": model,
+                "finish_reason": finish_reason,
+                "usage": usage,
+                "inference_config": inference_config,
             },
-            raw_response=data,
         )

@@ -1,0 +1,741 @@
+{
+  "manifest_id": "development-v1",
+  "version": 1,
+  "description": "Explicit development fixtures. Oracle prototype configuration is preserved; other ERP entries remain incomplete drafts. These fixtures do not certify ERP execution capabilities.",
+  "profiles": [
+    {
+      "key": "oracle-fusion-cloud",
+      "name": "Oracle Fusion Cloud",
+      "display_name": "Oracle Fusion Cloud",
+      "vendor": "Oracle",
+      "product_version": "Cloud",
+      "description": "Production integration profile for Oracle Fusion Cloud ERP (Payables, Receivables, TCA).",
+      "status": "PUBLISHED",
+      "configuration": {
+        "dialect": "Oracle",
+        "schema_grounding_required": true
+      },
+      "profile_version": {
+        "version": 1,
+        "status": "PUBLISHED",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "SQL",
+          "PKS",
+          "PKB",
+          "DEPLOYMENT"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "oracle_context_analysis",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "oracle_fdd",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "oracle_tdd",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "SQL",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "oracle_sql",
+                "prompt_stage": "SQL",
+                "label": "SQL"
+              },
+              {
+                "type": "PKS",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "oracle_plsql",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKS"
+              },
+              {
+                "type": "PKB",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "oracle_plsql",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKB"
+              },
+              {
+                "type": "DEPLOYMENT",
+                "depends_on": [
+                  "PKS",
+                  "PKB"
+                ],
+                "adapter": "oracle_deployment",
+                "prompt_stage": "DEPLOYMENT",
+                "label": "DEPLOYMENT"
+              }
+            ]
+          },
+          "generation": {
+            "strategy": "configured_adapters"
+          },
+          "validation": {
+            "schema_conformity": true,
+            "adapters": {
+              "SQL": "oracle_sql",
+              "PKS": "oracle_plsql",
+              "PKB": "oracle_plsql"
+            },
+            "cross_artifact_traceability": true,
+            "traceability_adapter": "oracle_attribute_lineage"
+          }
+        },
+        "prompts": [
+          {
+            "name": "CONTEXT_ANALYSIS instructions",
+            "scope": "STAGE",
+            "stage": "CONTEXT_ANALYSIS",
+            "content": "You are an expert ERP integration analyst specializing in Oracle Fusion Cloud.\n\nYour task is to analyze a business requirement against the provided ERP schema context\nand produce a structured context analysis.\n\n## CRITICAL RULES\n1. You MUST ONLY use entities, tables, columns, and relationships present in the provided schema context.\n2. NEVER invent or fabricate tables, columns, foreign keys, or relationships.\n3. If information is insufficient to establish a required mapping, report it as an ambiguity.\n4. Surface all assumptions explicitly \u2014 never make silent assumptions.\n5. Be precise about join conditions and cite which foreign key / context supports each relationship.\n\n## OUTPUT FORMAT\nReturn a JSON object with this exact structure:\n{\n  \"business_objective\": \"string \u2014 concise statement of what the extraction achieves\",\n  \"identified_entities\": [\n    {\n      \"business_name\": \"string \u2014 human-readable entity name\",\n      \"erp_table\": \"string \u2014 exact table name from schema\",\n      \"role\": \"primary | lookup | child | reference\",\n      \"relevant_columns\": [\n        {\n          \"column_name\": \"string \u2014 exact column name\",\n          \"data_type\": \"string\",\n          \"business_meaning\": \"string \u2014 what this column represents\"\n        }\n      ]\n    }\n  ],\n  \"relationships\": [\n    {\n      \"from_entity\": \"string \u2014 source table\",\n      \"to_entity\": \"string \u2014 target table\",\n      \"join_type\": \"INNER | LEFT OUTER | RIGHT OUTER\",\n      \"join_condition\": \"string \u2014 SQL join condition\",\n      \"source_evidence\": \"string \u2014 which FK/context supports this join\"\n    }\n  ],\n  \"extraction_modes\": [\"FULL\", \"DELTA\", \"SELECTIVE\"],\n  \"required_filters\": [\n    {\n      \"description\": \"string\",\n      \"filter_expression\": \"string \u2014 SQL WHERE clause fragment\"\n    }\n  ],\n  \"required_transformations\": [\n    {\n      \"attribute\": \"string\",\n      \"transformation\": \"string \u2014 what transformation is needed\",\n      \"reason\": \"string\"\n    }\n  ],\n  \"output_expectations\": {\n    \"format\": \"string \u2014 DELIMITED_FLAT_FILE | CSV | etc.\",\n    \"delimiter\": \"string\",\n    \"estimated_columns\": \"number\"\n  },\n  \"assumptions\": [\n    {\n      \"description\": \"string \u2014 what was assumed\",\n      \"impact\": \"string \u2014 what happens if assumption is wrong\",\n      \"needs_confirmation\": true\n    }\n  ],\n  \"ambiguities\": [\n    {\n      \"description\": \"string \u2014 what is unclear\",\n      \"options\": [\"string \u2014 possible interpretations\"],\n      \"recommendation\": \"string\"\n    }\n  ],\n  \"missing_information\": [\"string \u2014 what is missing from the requirement or schema\"],\n  \"confidence_notes\": [\"string \u2014 any caveats about the analysis\"]\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "FDD instructions",
+            "scope": "STAGE",
+            "stage": "FDD",
+            "content": "You are an expert ERP integration architect creating a Functional Design Document (FDD).\n\nYou have been provided:\n1. An approved Context Analysis (entities, relationships, assumptions already reviewed)\n2. The original business requirement\n3. The ERP schema context\n\nYour task is to produce a complete FDD as a structured JSON document.\n\n## CRITICAL RULES\n1. Use ONLY entities, tables, and columns from the approved context analysis and schema.\n2. Every business attribute MUST map to a real source table and column.\n3. NEVER invent tables, columns, or relationships not in the schema.\n4. Document all sanitization rules for text fields.\n5. Be explicit about extraction modes (FULL, DELTA, SELECTIVE).\n\n## OUTPUT FORMAT\nReturn a JSON object with this structure:\n{\n  \"document_title\": \"string\",\n  \"business_scope\": {\n    \"purpose\": \"string \u2014 why this extraction exists\",\n    \"scope\": \"string \u2014 what data is included/excluded\",\n    \"relevant_entities\": [\"string \u2014 key business entities\"],\n    \"downstream_use\": \"string \u2014 what system consumes this data\"\n  },\n  \"attribute_mappings\": [\n    {\n      \"seq\": 1,\n      \"business_attribute\": \"string \u2014 human-readable name\",\n      \"source_entity\": \"string \u2014 business entity name\",\n      \"source_table\": \"string \u2014 exact ERP table\",\n      \"source_column\": \"string \u2014 exact ERP column\",\n      \"data_type\": \"string\",\n      \"business_description\": \"string \u2014 what this attribute means\",\n      \"transformation\": \"string | null \u2014 any transformation logic\",\n      \"business_rule\": \"string | null \u2014 any business rule applied\",\n      \"nullable\": true,\n      \"in_output\": true\n    }\n  ],\n  \"extraction_modes\": {\n    \"full\": {\n      \"description\": \"string\",\n      \"filter_criteria\": \"string \u2014 what records are included\"\n    },\n    \"delta\": {\n      \"description\": \"string\",\n      \"timestamp_column\": \"string \u2014 column used for incremental detection\",\n      \"filter_criteria\": \"string\"\n    },\n    \"selective\": {\n      \"description\": \"string\",\n      \"parameters\": [\"string \u2014 runtime parameters\"]\n    }\n  },\n  \"business_rules\": [\n    {\n      \"rule_id\": \"BR001\",\n      \"description\": \"string\",\n      \"applies_to\": [\"string \u2014 which attributes\"],\n      \"logic\": \"string \u2014 the rule logic\"\n    }\n  ],\n  \"sanitization_rules\": {\n    \"delimiter_character\": \"|\",\n    \"rules\": [\n      {\n        \"rule_id\": \"SR001\",\n        \"description\": \"string\",\n        \"characters_handled\": [\"string\"],\n        \"replacement\": \"string\",\n        \"applies_to\": \"ALL_TEXT_FIELDS | specific fields\"\n      }\n    ]\n  },\n  \"output_specification\": {\n    \"format\": \"DELIMITED_FLAT_FILE\",\n    \"delimiter\": \"|\",\n    \"header_row\": true,\n    \"file_naming\": \"string \u2014 file name pattern\",\n    \"encoding\": \"UTF-8\",\n    \"null_representation\": \"string\",\n    \"date_format\": \"string\",\n    \"number_format\": \"string\"\n  }\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "TDD instructions",
+            "scope": "STAGE",
+            "stage": "TDD",
+            "content": "You are an expert Oracle PL/SQL engineer creating a Technical Design Document (TDD).\n\nYou have been provided:\n1. An approved FDD (business mappings, rules, sanitization, output spec)\n2. An approved Context Analysis\n3. The ERP schema context\n\nYour task is to translate the approved FDD into a complete technical implementation design.\n\n## CRITICAL RULES\n1. The TDD must be fully traceable to the approved FDD \u2014 every FDD attribute must appear.\n2. Use ONLY schema objects from the provided context.\n3. Define exact SQL join conditions, not pseudocode.\n4. Define the PL/SQL package structure (procedures, parameters).\n5. Design incremental watermark logic.\n\n## OUTPUT FORMAT\nReturn a JSON object:\n{\n  \"document_title\": \"string\",\n  \"technical_architecture\": {\n    \"package_name\": \"string \u2014 PL/SQL package name\",\n    \"schema_owner\": \"string\",\n    \"description\": \"string\"\n  },\n  \"source_entities\": [\n    {\n      \"table_name\": \"string\",\n      \"alias\": \"string\",\n      \"role\": \"string \u2014 primary/lookup/child\",\n      \"key_columns\": [\"string\"]\n    }\n  ],\n  \"entity_relationships\": [\n    {\n      \"from_table\": \"string\",\n      \"from_alias\": \"string\",\n      \"to_table\": \"string\",\n      \"to_alias\": \"string\",\n      \"join_type\": \"INNER JOIN | LEFT OUTER JOIN\",\n      \"join_condition\": \"string \u2014 exact SQL condition\",\n      \"purpose\": \"string\"\n    }\n  ],\n  \"sql_design\": {\n    \"select_columns\": [\n      {\n        \"seq\": 1,\n        \"expression\": \"string \u2014 SQL expression\",\n        \"alias\": \"string\",\n        \"source_table\": \"string\",\n        \"data_type\": \"string\",\n        \"fdd_mapping\": \"string \u2014 which FDD attribute this satisfies\"\n      }\n    ],\n    \"from_clause\": \"string \u2014 main table with alias\",\n    \"join_clauses\": [\"string \u2014 complete JOIN statements\"],\n    \"where_clause\": \"string \u2014 base filter conditions\",\n    \"order_by\": \"string | null\"\n  },\n  \"input_parameters\": [\n    {\n      \"name\": \"string \u2014 parameter name\",\n      \"data_type\": \"string \u2014 Oracle data type\",\n      \"direction\": \"IN | OUT | IN OUT\",\n      \"default_value\": \"string | null\",\n      \"description\": \"string\"\n    }\n  ],\n  \"output_structure\": {\n    \"delimiter\": \"|\",\n    \"columns\": [\n      {\n        \"seq\": 1,\n        \"name\": \"string\",\n        \"source_expression\": \"string\",\n        \"sanitized\": true\n      }\n    ]\n  },\n  \"extraction_modes\": {\n    \"full\": {\"parameter_value\": \"string\", \"behavior\": \"string\"},\n    \"delta\": {\"parameter_value\": \"string\", \"timestamp_column\": \"string\", \"behavior\": \"string\"},\n    \"selective\": {\"parameters\": [\"string\"], \"behavior\": \"string\"}\n  },\n  \"incremental_logic\": {\n    \"watermark_table\": \"string \u2014 table to store extraction watermark\",\n    \"watermark_column\": \"string\",\n    \"on_success\": \"string \u2014 what happens on success\",\n    \"on_failure\": \"string \u2014 what happens on failure\",\n    \"restart_behavior\": \"string\"\n  },\n  \"sanitization_design\": {\n    \"function_name\": \"string \u2014 sanitization function name\",\n    \"characters_replaced\": [\n      {\"character\": \"string\", \"replacement\": \"string\", \"oracle_function\": \"string\"}\n    ]\n  },\n  \"file_generation\": {\n    \"directory_object\": \"string \u2014 Oracle directory\",\n    \"file_naming_pattern\": \"string\",\n    \"header_record\": true,\n    \"record_terminator\": \"string\",\n    \"utl_file_usage\": true\n  },\n  \"logging_design\": {\n    \"log_table\": \"string | null\",\n    \"log_procedure\": \"string\",\n    \"log_levels\": [\"INFO\", \"WARNING\", \"ERROR\"]\n  },\n  \"exception_handling\": {\n    \"strategy\": \"string\",\n    \"on_record_error\": \"string \u2014 SKIP | ABORT\",\n    \"on_file_error\": \"string\",\n    \"error_logging\": \"string\"\n  },\n  \"procedures\": [\n    {\n      \"name\": \"string\",\n      \"visibility\": \"PUBLIC | PRIVATE\",\n      \"description\": \"string\",\n      \"parameters\": [\"string \u2014 param signatures\"]\n    }\n  ],\n  \"performance_considerations\": [\"string\"],\n  \"deployment_considerations\": [\"string\"]\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "SQL instructions",
+            "scope": "STAGE",
+            "stage": "SQL",
+            "content": "You are an expert Oracle SQL engineer generating an extraction query.\n\nYou have the approved TDD which contains the exact SQL design, joins, columns, and filters.\nYour job is to produce the FINAL, EXECUTABLE SQL query.\n\n## CRITICAL RULES\n1. Generate ONLY valid Oracle SQL syntax.\n2. Use EXACTLY the tables, columns, aliases, and joins defined in the TDD.\n3. Include all SELECT columns from the TDD sql_design.\n4. Include all JOINs from the TDD entity_relationships.\n5. Include base WHERE filters.\n6. Add bind variable placeholders for runtime parameters.\n7. Apply sanitization wrapping to all text columns using REPLACE functions.\n8. Include comments explaining each section.\n9. Do NOT use tables/columns not in the schema context.\n\n## OUTPUT FORMAT\nReturn a JSON object:\n{\n  \"extraction_sql\": \"string \u2014 the complete formatted SQL query\",\n  \"full_mode_sql\": \"string \u2014 SQL for FULL extraction mode\",\n  \"delta_mode_sql\": \"string \u2014 SQL for DELTA/incremental mode\",\n  \"selective_mode_sql\": \"string \u2014 SQL for SELECTIVE mode with parameters\",\n  \"column_count\": \"number\",\n  \"join_count\": \"number\",\n  \"explanation\": \"string \u2014 brief explanation of the query design\",\n  \"bind_variables\": [\n    {\n      \"name\": \"string\",\n      \"data_type\": \"string\",\n      \"used_in\": \"string \u2014 DELTA | SELECTIVE | BOTH\"\n    }\n  ],\n  \"sanitized_columns\": [\"string \u2014 columns that have sanitization applied\"]\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "CODE_GENERATION instructions",
+            "scope": "STAGE",
+            "stage": "CODE_GENERATION",
+            "content": "You are an expert Oracle PL/SQL engineer generating a complete extraction package.\n\nYou have the approved TDD (package structure, procedures, parameters) and the approved SQL.\nGenerate BOTH the Package Specification (.pks) and Package Body (.pkb).\n\n## CRITICAL RULES\n1. Generate COMPLETE, COMPILABLE Oracle PL/SQL code. No placeholders, TODOs, or pseudocode.\n2. The package specification must declare all PUBLIC procedures from the TDD.\n3. The package body must implement every declared procedure.\n4. Embed the approved extraction SQL in cursor definitions.\n5. Implement data sanitization using REPLACE for CHR(10), CHR(13), and the delimiter.\n6. Implement UTL_FILE operations for flat file generation.\n7. Implement watermark/token management for incremental extraction.\n8. Include proper exception handling with WHEN OTHERS and logging.\n9. Include file open/write/close with proper error handling.\n10. Watermark must ONLY advance after successful extraction completion.\n\n## OUTPUT FORMAT\nReturn a JSON object:\n{\n  \"package_name\": \"string\",\n  \"pks_content\": \"string \u2014 complete package specification source code\",\n  \"pkb_content\": \"string \u2014 complete package body source code\",\n  \"procedures\": [\n    {\n      \"name\": \"string\",\n      \"visibility\": \"PUBLIC | PRIVATE\",\n      \"description\": \"string\",\n      \"parameters\": [\"string\"]\n    }\n  ],\n  \"features_implemented\": {\n    \"extraction_modes\": [\"FULL\", \"DELTA\", \"SELECTIVE\"],\n    \"sanitization\": true,\n    \"watermark_management\": true,\n    \"file_generation\": true,\n    \"error_handling\": true,\n    \"logging\": true,\n    \"header_record\": true\n  },\n  \"compilation_notes\": [\"string \u2014 any notes about compilation requirements\"]\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          },
+          {
+            "name": "DEPLOYMENT instructions",
+            "scope": "STAGE",
+            "stage": "DEPLOYMENT",
+            "content": "You are an expert Oracle DBA and ERP DevOps engineer generating an enterprise deployment package.\n\nYou have the approved TDD, SQL, and PL/SQL package definitions.\nYour job is to generate a comprehensive, production-ready deployment package.\n\n## CRITICAL RULES\n1. Provide exact SQL*Plus / SQLcl compatible scripts.\n2. Define a strict, safe compilation order (dependencies first: types/tables -> spec -> body -> grants/synonyms).\n3. Include pre-deployment verification checks (schema privileges, tablespace, directory objects).\n4. Include post-deployment verification tests (package validity, sample dry-run).\n5. Provide a safe, idempotent rollback script.\n6. Return structured JSON.\n\n## OUTPUT FORMAT\nReturn a JSON object:\n{\n  \"package_name\": \"string \u2014 deployment package title\",\n  \"version\": \"1.0.0\",\n  \"target_environment\": \"Oracle Fusion Cloud (ERP / Financials)\",\n  \"prerequisites\": [\n    {\n      \"check\": \"string \u2014 e.g. UTL_FILE directory object access\",\n      \"verification_query\": \"string \u2014 SQL check query\"\n    }\n  ],\n  \"installation_steps\": [\n    {\n      \"step_number\": 1,\n      \"name\": \"string\",\n      \"file_or_action\": \"string\",\n      \"description\": \"string\",\n      \"command\": \"string \u2014 SQL*Plus / SQLcl command\"\n    }\n  ],\n  \"grants_and_synonyms_sql\": \"string \u2014 GRANT EXECUTE and CREATE SYNONYM DDL\",\n  \"verification_script_sql\": \"string \u2014 script to verify package validity and test execution\",\n  \"rollback_script_sql\": \"string \u2014 safe rollback script in reverse order\",\n  \"run_instructions_markdown\": \"string \u2014 markdown instructions for the deployment engineer\"\n}",
+            "version": 1,
+            "status": "PUBLISHED",
+            "variables": []
+          }
+        ]
+      },
+      "sample_projects": [
+        {
+          "name": "Oracle Fusion AP Invoices & Lines Outbound Feed",
+          "description": "Development fixture for invoice extraction through supplier-to-party relationships. Generated PL/SQL targets a separately provisioned Oracle staging database.",
+          "business_requirement": "Extract AP invoice headers and lines changed in the last 24 hours. Resolve supplier party name through AP_INVOICES_ALL.VENDOR_ID = POZ_SUPPLIERS.VENDOR_ID and POZ_SUPPLIERS.PARTY_ID = HZ_PARTIES.PARTY_ID. Output pipe-delimited CSV; any generated PL/SQL runs only in a separately provisioned Oracle staging database with these supplied objects. Confirm source extraction and database permissions before implementation.",
+          "erp_schema_context": {
+            "tables": [
+              {
+                "name": "AP_INVOICES_ALL",
+                "description": "Invoice header records in Oracle Fusion Payables",
+                "columns": [
+                  {
+                    "name": "INVOICE_ID",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "primary_key": true
+                  },
+                  {
+                    "name": "INVOICE_NUM",
+                    "data_type": "VARCHAR2(50)",
+                    "nullable": false
+                  },
+                  {
+                    "name": "INVOICE_DATE",
+                    "data_type": "DATE",
+                    "nullable": false
+                  },
+                  {
+                    "name": "INVOICE_AMOUNT",
+                    "data_type": "NUMBER",
+                    "nullable": false
+                  },
+                  {
+                    "name": "PAYMENT_STATUS_FLAG",
+                    "data_type": "VARCHAR2(1)",
+                    "nullable": true
+                  },
+                  {
+                    "name": "VENDOR_ID",
+                    "data_type": "NUMBER",
+                    "nullable": true,
+                    "foreign_key": "POZ_SUPPLIERS.VENDOR_ID"
+                  },
+                  {
+                    "name": "CANCELLED_DATE",
+                    "data_type": "DATE",
+                    "nullable": true
+                  },
+                  {
+                    "name": "LAST_UPDATE_DATE",
+                    "data_type": "TIMESTAMP",
+                    "nullable": false
+                  }
+                ]
+              },
+              {
+                "name": "AP_INVOICE_LINES_ALL",
+                "description": "Itemized lines for each invoice header",
+                "columns": [
+                  {
+                    "name": "INVOICE_ID",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "foreign_key": "AP_INVOICES_ALL.INVOICE_ID"
+                  },
+                  {
+                    "name": "LINE_NUMBER",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "primary_key": true
+                  },
+                  {
+                    "name": "LINE_TYPE_LOOKUP_CODE",
+                    "data_type": "VARCHAR2(25)",
+                    "nullable": false
+                  },
+                  {
+                    "name": "AMOUNT",
+                    "data_type": "NUMBER",
+                    "nullable": false
+                  },
+                  {
+                    "name": "DESCRIPTION",
+                    "data_type": "VARCHAR2(240)",
+                    "nullable": true
+                  },
+                  {
+                    "name": "LAST_UPDATE_DATE",
+                    "data_type": "TIMESTAMP",
+                    "nullable": false
+                  }
+                ]
+              },
+              {
+                "name": "POZ_SUPPLIERS",
+                "description": "Supplier-to-party relationship used by this development fixture",
+                "columns": [
+                  {
+                    "name": "VENDOR_ID",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "primary_key": true
+                  },
+                  {
+                    "name": "PARTY_ID",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "foreign_key": "HZ_PARTIES.PARTY_ID"
+                  }
+                ]
+              },
+              {
+                "name": "HZ_PARTIES",
+                "description": "Trading Community Architecture (TCA) parties including vendors and suppliers",
+                "columns": [
+                  {
+                    "name": "PARTY_ID",
+                    "data_type": "NUMBER",
+                    "nullable": false,
+                    "primary_key": true
+                  },
+                  {
+                    "name": "PARTY_NAME",
+                    "data_type": "VARCHAR2(360)",
+                    "nullable": false
+                  },
+                  {
+                    "name": "PARTY_NUMBER",
+                    "data_type": "VARCHAR2(30)",
+                    "nullable": true
+                  }
+                ]
+              }
+            ],
+            "foreign_keys": [
+              {
+                "from": "AP_INVOICE_LINES_ALL.INVOICE_ID",
+                "to": "AP_INVOICES_ALL.INVOICE_ID"
+              },
+              {
+                "from": "AP_INVOICES_ALL.VENDOR_ID",
+                "to": "POZ_SUPPLIERS.VENDOR_ID"
+              },
+              {
+                "from": "POZ_SUPPLIERS.PARTY_ID",
+                "to": "HZ_PARTIES.PARTY_ID"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "sap-s4hana-cloud",
+      "name": "SAP S/4HANA Cloud",
+      "display_name": "SAP S/4HANA Cloud",
+      "vendor": "SAP",
+      "product_version": "2023 / Cloud",
+      "description": "Enterprise integration profile for SAP S/4HANA (FI/CO, MM, SD, Business Partner). Development draft only; configure and verify prompts, assets and capabilities before publication.",
+      "status": "DRAFT",
+      "configuration": {
+        "dialect": "HANA",
+        "schema_grounding_required": true
+      },
+      "profile_version": {
+        "version": 1,
+        "status": "DRAFT",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "SQL",
+          "PKS",
+          "PKB",
+          "DEPLOYMENT"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "SQL",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "SQL",
+                "label": "SQL"
+              },
+              {
+                "type": "PKS",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKS"
+              },
+              {
+                "type": "PKB",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKB"
+              },
+              {
+                "type": "DEPLOYMENT",
+                "depends_on": [
+                  "PKS",
+                  "PKB"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "DEPLOYMENT",
+                "label": "DEPLOYMENT"
+              }
+            ]
+          },
+          "generation": {
+            "strategy": "configured_adapters"
+          },
+          "validation": {
+            "schema_conformity": false,
+            "adapters": {},
+            "cross_artifact_traceability": false,
+            "traceability_adapter": null
+          }
+        },
+        "prompts": []
+      },
+      "sample_projects": []
+    },
+    {
+      "key": "netsuite-erp",
+      "name": "NetSuite ERP",
+      "display_name": "NetSuite ERP",
+      "vendor": "Oracle NetSuite",
+      "product_version": "2024.1",
+      "description": "Cloud ERP integration profile for Oracle NetSuite (Transactions, Customers, Invoices, Payments). Development draft only; configure and verify prompts, assets and capabilities before publication.",
+      "status": "DRAFT",
+      "configuration": {
+        "dialect": "SuiteQL",
+        "schema_grounding_required": true
+      },
+      "profile_version": {
+        "version": 1,
+        "status": "DRAFT",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "SQL",
+          "PKS",
+          "PKB",
+          "DEPLOYMENT"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "SQL",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "SQL",
+                "label": "SQL"
+              },
+              {
+                "type": "PKS",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKS"
+              },
+              {
+                "type": "PKB",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKB"
+              },
+              {
+                "type": "DEPLOYMENT",
+                "depends_on": [
+                  "PKS",
+                  "PKB"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "DEPLOYMENT",
+                "label": "DEPLOYMENT"
+              }
+            ]
+          },
+          "generation": {
+            "strategy": "configured_adapters"
+          },
+          "validation": {
+            "schema_conformity": false,
+            "adapters": {},
+            "cross_artifact_traceability": false,
+            "traceability_adapter": null
+          }
+        },
+        "prompts": []
+      },
+      "sample_projects": []
+    },
+    {
+      "key": "workday-financials",
+      "name": "Workday Financial Management",
+      "display_name": "Workday Financial Management",
+      "vendor": "Workday",
+      "product_version": "2024R1",
+      "description": "Enterprise cloud financial profile for Workday (General Ledger, Customer Accounts, Supplier Accounts). Development draft only; configure and verify prompts, assets and capabilities before publication.",
+      "status": "DRAFT",
+      "configuration": {
+        "dialect": "Workday RaaS / SQL",
+        "schema_grounding_required": true
+      },
+      "profile_version": {
+        "version": 1,
+        "status": "DRAFT",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "SQL",
+          "PKS",
+          "PKB",
+          "DEPLOYMENT"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "SQL",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "SQL",
+                "label": "SQL"
+              },
+              {
+                "type": "PKS",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKS"
+              },
+              {
+                "type": "PKB",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKB"
+              },
+              {
+                "type": "DEPLOYMENT",
+                "depends_on": [
+                  "PKS",
+                  "PKB"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "DEPLOYMENT",
+                "label": "DEPLOYMENT"
+              }
+            ]
+          },
+          "generation": {
+            "strategy": "configured_adapters"
+          },
+          "validation": {
+            "schema_conformity": false,
+            "adapters": {},
+            "cross_artifact_traceability": false,
+            "traceability_adapter": null
+          }
+        },
+        "prompts": []
+      },
+      "sample_projects": []
+    },
+    {
+      "key": "dynamics-365-fo",
+      "name": "Microsoft Dynamics 365 F&O",
+      "display_name": "Microsoft Dynamics 365 F&O",
+      "vendor": "Microsoft",
+      "product_version": "10.0 / One Version",
+      "description": "Integration profile for Microsoft Dynamics 365 Finance & Operations (VendTable, PurchTable, CustTable). Development draft only; configure and verify prompts, assets and capabilities before publication.",
+      "status": "DRAFT",
+      "configuration": {
+        "dialect": "T-SQL / OData",
+        "schema_grounding_required": true
+      },
+      "profile_version": {
+        "version": 1,
+        "status": "DRAFT",
+        "supported_artifact_types": [
+          "CONTEXT_ANALYSIS",
+          "FDD",
+          "TDD",
+          "SQL",
+          "PKS",
+          "PKB",
+          "DEPLOYMENT"
+        ],
+        "configuration": {
+          "workflow": {
+            "stages": [
+              {
+                "type": "CONTEXT_ANALYSIS",
+                "depends_on": [],
+                "adapter": "generic_json",
+                "prompt_stage": "CONTEXT_ANALYSIS",
+                "label": "CONTEXT ANALYSIS"
+              },
+              {
+                "type": "FDD",
+                "depends_on": [
+                  "CONTEXT_ANALYSIS"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "FDD",
+                "label": "FDD"
+              },
+              {
+                "type": "TDD",
+                "depends_on": [
+                  "FDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "TDD",
+                "label": "TDD"
+              },
+              {
+                "type": "SQL",
+                "depends_on": [
+                  "TDD"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "SQL",
+                "label": "SQL"
+              },
+              {
+                "type": "PKS",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKS"
+              },
+              {
+                "type": "PKB",
+                "depends_on": [
+                  "SQL"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "CODE_GENERATION",
+                "label": "PKB"
+              },
+              {
+                "type": "DEPLOYMENT",
+                "depends_on": [
+                  "PKS",
+                  "PKB"
+                ],
+                "adapter": "generic_json",
+                "prompt_stage": "DEPLOYMENT",
+                "label": "DEPLOYMENT"
+              }
+            ]
+          },
+          "generation": {
+            "strategy": "configured_adapters"
+          },
+          "validation": {
+            "schema_conformity": false,
+            "adapters": {},
+            "cross_artifact_traceability": false,
+            "traceability_adapter": null
+          }
+        },
+        "prompts": []
+      },
+      "sample_projects": []
+    }
+  ]
+}

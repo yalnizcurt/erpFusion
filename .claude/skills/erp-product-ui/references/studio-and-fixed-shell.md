@@ -23,7 +23,9 @@ filters, pagination and selection when returning from a project. The workflow
 belongs in [ProjectStudio](../../../../frontend/src/components/ProjectStudio.jsx).
 
 Project creation selects an explicit client, ERP installation, environment and
-published profile version. RequirementsWorkspace provides document upload,
+published profile version and compatible published integration pattern. Show product and pattern
+as separate choices; exact baseline versions come from the pattern, not arbitrary UI defaults.
+Keep legacy projects with no pattern pin visibly historical/compatible. RequirementsWorkspace provides document upload,
 extraction/scan status, editable requirement/context, expected-version saves and
 explicit profile upgrade confirmation. Do not obscure intake behind the artifact
 viewer or silently change a request's ERP version.
@@ -63,13 +65,21 @@ Use [api.ts](../../../../frontend/src/api.ts), including `downloadApiFile`, for
 authenticated downloads and session-rejection handling. File choices must refer
 to exact candidate bytes and explicit historical versions. Preserve object URL
 cleanup. Source bundles/manual sign-off must retain their assurance labels; the
-sandbox screen cannot claim automatic import or independent remote execution.
+sandbox screen must show the actual operation, adapter, runtime, capability blockers and
+assurance. Publisher source/simulated output cannot claim qualified native import or exact
+remote generated-candidate identity. Installation is required only by the selected pattern.
 
 Never persist ERP secrets, tokens, requirement text or generated client artifacts
 in local storage for convenience. OIDC transient transaction storage is a
 separate controlled mechanism. Clear private state when sessions change and keep
 code/content as text rather than executable HTML. Do not add external analytics,
 session replay, fonts or content exports without an approved data-boundary change.
+
+## Product naming
+
+Use HighStudio for active product UI. Author attribution belongs only in HTML head metadata.
+Retain persisted/internal legacy keys unless a compatible migration explicitly changes them.
+Do not restore the removed external font/resource call during a rename.
 
 ## Regression anchors
 

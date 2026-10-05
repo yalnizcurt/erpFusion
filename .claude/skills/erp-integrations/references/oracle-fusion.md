@@ -19,10 +19,19 @@ and report execution unverified and import capability unsupported. A configured
 is version-bound and expires.
 
 `execute_report` implements bounded CSV `runReport` output with exact connection,
-secret-version and report-path checks and output provenance. It exists as a
-service helper and has synthetic protocol tests; the current Studio sandbox
-flow does not wire it to an approved automatic execution job. Do not report the
-helper as an end-to-end live sandbox feature.
+secret-version and report-path checks and output provenance. The [execution harness](../../../../backend/app/services/execution.py) can dispatch
+approved existing-report operations through this transport with pattern and target bindings.
+Its synthetic protocol tests establish local behavior, not authorized live qualification.
+The adapter does not install generated native assets or verify their remote identity.
+
+## Product and pattern separation
+
+HighStudio is the HighRadius engineering/qualification control plane. Oracle Fusion Cloud
+is a product, and Publisher outbound extraction is one governed pattern. Its current
+`PUBLISHER_SOURCE` deliverable is text source, not a qualified vendor-native export.
+`oracle_simulator` is development only and records simulated receipts/CSV assertions;
+its installation/execution history cannot qualify Oracle native behavior. Other API, file,
+external-runtime and assisted patterns use their own contracts; installation is optional.
 
 ## Generation and package target
 
@@ -59,8 +68,9 @@ requires a scoped application change; documentation does not itself refactor the
 
 ## Evidence limits
 
-[Package routes](../../../../backend/app/api/packages.py) currently record assisted
-manual sandbox evidence and sign-off; they mark automatic import unsupported and
+[Package routes](../../../../backend/app/api/packages.py) record assisted
+manual sandbox evidence and sign-off, while [attempt routes](../../../../backend/app/api/executions.py)
+record installed-adapter execution evidence and assurance; they mark automatic import unsupported and
 remote exact bytes unverified. A source ZIP or local validation PASS is not proof
 of native installation or execution. A live demo requires an authorized tenant,
 approved native baseline, permitted operations and independently checked outputs.

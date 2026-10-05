@@ -1,6 +1,6 @@
 ---
 name: verification-and-release
-description: Select checks and assess evidence for erpFusion changes, database migrations, cloud readiness, immutable packages, sandbox sign-off and release qualification. Use when testing or reporting whether a capability or package is ready, passed, live or production-qualified.
+description: Select checks and assess evidence for HighStudio changes, database migrations, cloud readiness, immutable packages, sandbox sign-off and release qualification. Use when testing or reporting whether a capability or package is ready, passed, live or production-qualified.
 ---
 
 # Verification and release
@@ -31,6 +31,13 @@ grant approval to change a database, deploy, publish or invoke a live provider/E
 SQLite proves PostgreSQL isolation/concurrency. A test name or CI file proves a
 test was executed. Readiness 200 proves ERP installation. A manual PASS proves
 remote bytes. A new ERP onboarding test qualifies every package stage.
+
+## Pattern architecture reference
+
+Read the [HighStudio pattern architecture](../../../docs/architecture/highstudio-integration-patterns.md)
+when a task changes pattern selection, approved baseline pins, target runtime or qualification
+claims. Reuse existing intelligence, ownership, revision and evidence services; installation
+is required only when the selected pattern contract requires it.
 
 ## Source entry points
 

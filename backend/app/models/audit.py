@@ -1,18 +1,22 @@
 """
-erpFusion — AuditEntry Model
+HighStudio — AuditEntry Model
 
 Records every action taken on an artifact version — creation, validation,
 review decisions, invalidations, and regenerations. Provides full traceability
 for the engineering process.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import AuditAction, Base, UUIDPrimaryKeyMixin
+
+if TYPE_CHECKING:
+    from app.models.version import ArtifactVersion
 
 
 class AuditEntry(UUIDPrimaryKeyMixin, Base):
@@ -32,10 +36,13 @@ class AuditEntry(UUIDPrimaryKeyMixin, Base):
         nullable=False,
         index=True,
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # ── Action ────────────────────────────────────────────────
     action: Mapped[AuditAction] = mapped_column(
-        Enum(AuditAction, name="audit_action"),
+        Enum(AuditAction, name="audit_action", native_enum=False),
         nullable=False,
     )
 
@@ -44,6 +51,12 @@ class AuditEntry(UUIDPrimaryKeyMixin, Base):
         String(255),
         nullable=False,
         comment="'system' | 'ai' | 'human:<user_id>'",
+    )
+    actor_subject_id: Mapped[str | None] = mapped_column(
+        String(36),
+        ForeignKey("identity_subjects.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     # ── Details ───────────────────────────────────────────────
@@ -59,7 +72,7 @@ class AuditEntry(UUIDPrimaryKeyMixin, Base):
     # ── Timestamp ─────────────────────────────────────────────
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
         index=True,
     )

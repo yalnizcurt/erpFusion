@@ -1,1 +1,1 @@
-"""erpFusion — App Package"""
+"""HighStudio — App Package"""

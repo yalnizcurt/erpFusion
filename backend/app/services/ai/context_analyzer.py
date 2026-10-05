@@ -1,5 +1,5 @@
 """
-erpFusion — Context Analysis AI Pipeline
+HighStudio — Context Analysis AI Pipeline
 
 Given a business requirement + ERP schema context, produces a structured
 analysis identifying entities, relationships, extraction modes, assumptions,

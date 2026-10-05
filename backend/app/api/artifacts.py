@@ -1,5 +1,5 @@
 """
-erpFusion — Artifact API Routes
+HighStudio — Artifact API Routes
 
 Endpoints for viewing artifacts, their version history, and validation results.
 Also provides the workflow status endpoint.
@@ -18,6 +18,8 @@ from app.schemas import (
     ValidationResultResponse,
     WorkflowStatusResponse,
 )
+from app.security.access import get_authorized_project
+from app.security.identity import Identity, get_current_identity
 from app.services.workflow import WorkflowEngine
 
 router = APIRouter(prefix="/api", tags=["Artifacts"])
@@ -36,12 +38,13 @@ router = APIRouter(prefix="/api", tags=["Artifacts"])
 async def get_workflow_status(
     project_id: str,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> WorkflowStatusResponse:
     """
     Returns the full workflow status showing each stage's gate status,
     current version, and which stage is currently active.
     """
-    project = await _get_project_or_404(project_id, db)
+    project = await _get_project_or_404(project_id, db, identity)
     workflow = WorkflowEngine(db)
     status_data = await workflow.get_workflow_status(project)
     return WorkflowStatusResponse(**status_data)
@@ -60,13 +63,14 @@ async def get_workflow_status(
 async def list_artifacts(
     project_id: str,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> list[ArtifactResponse]:
     """List all artifacts for a project with their current gate status."""
-    await _get_project_or_404(project_id, db)
+    project = await _get_project_or_404(project_id, db, identity)
 
     result = await db.execute(
         select(Artifact)
-        .where(Artifact.project_id == project_id)
+        .where(Artifact.project_id == project_id, Artifact.client_id == project.client_id)
         .order_by(Artifact.created_at)
     )
     artifacts = list(result.scalars().all())
@@ -81,9 +85,10 @@ async def list_artifacts(
 async def get_artifact(
     artifact_id: str,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> ArtifactResponse:
     """Get a single artifact by ID."""
-    artifact = await _get_artifact_or_404(artifact_id, db)
+    artifact = await _get_artifact_or_404(artifact_id, db, identity)
     return ArtifactResponse.model_validate(artifact)
 
 
@@ -100,13 +105,17 @@ async def get_artifact(
 async def list_versions(
     artifact_id: str,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> list[ArtifactVersionResponse]:
     """List all versions of an artifact, ordered by version number."""
-    await _get_artifact_or_404(artifact_id, db)
+    artifact = await _get_artifact_or_404(artifact_id, db, identity)
 
     result = await db.execute(
         select(ArtifactVersion)
-        .where(ArtifactVersion.artifact_id == artifact_id)
+        .where(
+            ArtifactVersion.artifact_id == artifact_id,
+            ArtifactVersion.client_id == artifact.client_id,
+        )
         .order_by(ArtifactVersion.version_number.desc())
     )
     versions = list(result.scalars().all())
@@ -122,9 +131,10 @@ async def get_version(
     artifact_id: str,
     version_number: int,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> ArtifactVersionResponse:
     """Get a specific version of an artifact by version number."""
-    version = await _get_version_or_404(artifact_id, version_number, db)
+    version = await _get_version_or_404(artifact_id, version_number, db, identity)
     return ArtifactVersionResponse.model_validate(version)
 
 
@@ -142,13 +152,17 @@ async def get_validations(
     artifact_id: str,
     version_number: int,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> list[ValidationResultResponse]:
     """Get all validation results for a specific artifact version."""
-    version = await _get_version_or_404(artifact_id, version_number, db)
+    version = await _get_version_or_404(artifact_id, version_number, db, identity)
 
     result = await db.execute(
         select(ValidationResult)
-        .where(ValidationResult.artifact_version_id == version.id)
+        .where(
+            ValidationResult.artifact_version_id == version.id,
+            ValidationResult.client_id == version.client_id,
+        )
         .order_by(ValidationResult.validated_at)
     )
     validations = list(result.scalars().all())
@@ -169,13 +183,19 @@ async def get_audit_trail(
     artifact_id: str,
     version_number: int,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> list[AuditEntryResponse]:
     """Get the audit trail for a specific artifact version."""
-    version = await _get_version_or_404(artifact_id, version_number, db)
+    version = await _get_version_or_404(artifact_id, version_number, db, identity)
 
     result = await db.execute(
         select(AuditEntry)
-        .where(AuditEntry.artifact_version_id == version.id)
+        .join(Artifact, Artifact.id == version.artifact_id)
+        .where(
+            AuditEntry.artifact_version_id == version.id,
+            AuditEntry.client_id == version.client_id,
+            AuditEntry.project_id == Artifact.project_id,
+        )
         .order_by(AuditEntry.timestamp)
     )
     entries = list(result.scalars().all())
@@ -190,17 +210,27 @@ async def get_audit_trail(
 async def get_project_audit_trail(
     project_id: str,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ) -> list[AuditEntryResponse]:
     """Get the complete audit trail for a project across all artifacts."""
-    await _get_project_or_404(project_id, db)
+    project = await _get_project_or_404(project_id, db, identity)
 
     result = await db.execute(
         select(AuditEntry)
-        .where(AuditEntry.project_id == project_id)
+        .join(ArtifactVersion, ArtifactVersion.id == AuditEntry.artifact_version_id)
+        .join(Artifact, Artifact.id == ArtifactVersion.artifact_id)
+        .where(
+            AuditEntry.project_id == project_id,
+            Artifact.project_id == project_id,
+            AuditEntry.client_id == project.client_id,
+            Artifact.client_id == project.client_id,
+            ArtifactVersion.client_id == project.client_id,
+        )
         .order_by(AuditEntry.timestamp)
     )
     entries = list(result.scalars().all())
     return [AuditEntryResponse.model_validate(e) for e in entries]
+
 
 @router.get(
     "/artifacts/{artifact_id}/diff",
@@ -211,13 +241,14 @@ async def get_version_diff(
     v1: int,
     v2: int,
     db: AsyncSession = Depends(get_db),
+    identity: Identity = Depends(get_current_identity),
 ):
     """Compute line diff between two versions of an artifact."""
     import difflib
     import json
 
-    ver1 = await _get_version_or_404(artifact_id, v1, db)
-    ver2 = await _get_version_or_404(artifact_id, v2, db)
+    ver1 = await _get_version_or_404(artifact_id, v1, db, identity)
+    ver2 = await _get_version_or_404(artifact_id, v2, db, identity)
 
     str1 = json.dumps(ver1.content, indent=2).splitlines(keepends=True)
     str2 = json.dumps(ver2.content, indent=2).splitlines(keepends=True)
@@ -229,25 +260,28 @@ async def get_version_diff(
         "v1": v1,
         "v2": v2,
         "diff_text": "".join(diff),
-        "changes_count": len([line for line in diff if line.startswith(("+", "-")) and not line.startswith(("+++", "---"))]),
+        "changes_count": len(
+            [
+                line
+                for line in diff
+                if line.startswith(("+", "-")) and not line.startswith(("+++", "---"))
+            ]
+        ),
     }
 
 
 # ── Helpers ───────────────────────────────────────────────────
 
 
-async def _get_project_or_404(project_id: str, db: AsyncSession) -> Project:
-    result = await db.execute(select(Project).where(Project.id == project_id))
-    project = result.scalar_one_or_none()
-    if project is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Project {project_id} not found",
-        )
-    return project
+async def _get_project_or_404(
+    project_id: str, db: AsyncSession, identity: object | None = None
+) -> Project:
+    return await get_authorized_project(project_id, db, identity)
 
 
-async def _get_artifact_or_404(artifact_id: str, db: AsyncSession) -> Artifact:
+async def _get_artifact_or_404(
+    artifact_id: str, db: AsyncSession, identity: object | None = None
+) -> Artifact:
     result = await db.execute(select(Artifact).where(Artifact.id == artifact_id))
     artifact = result.scalar_one_or_none()
     if artifact is None:
@@ -255,12 +289,19 @@ async def _get_artifact_or_404(artifact_id: str, db: AsyncSession) -> Artifact:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Artifact {artifact_id} not found",
         )
+    project = await get_authorized_project(artifact.project_id, db, identity)
+    if artifact.client_id != project.client_id:
+        raise HTTPException(404, "Artifact not found")
     return artifact
 
 
 async def _get_version_or_404(
-    artifact_id: str, version_number: int, db: AsyncSession
+    artifact_id: str,
+    version_number: int,
+    db: AsyncSession,
+    identity: object | None = None,
 ) -> ArtifactVersion:
+    artifact = await _get_artifact_or_404(artifact_id, db, identity)
     result = await db.execute(
         select(ArtifactVersion).where(
             ArtifactVersion.artifact_id == artifact_id,
@@ -268,7 +309,7 @@ async def _get_version_or_404(
         )
     )
     version = result.scalar_one_or_none()
-    if version is None:
+    if version is None or version.client_id != artifact.client_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Version {version_number} of artifact {artifact_id} not found",

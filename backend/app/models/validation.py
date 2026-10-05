@@ -1,17 +1,21 @@
 """
-erpFusion — ValidationResult Model
+HighStudio — ValidationResult Model
 
 Stores the results of automated validation checks performed on an
 artifact version before it is presented for human review.
 """
 
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, UUIDPrimaryKeyMixin, ValidationCategory, ValidationStatus
+
+if TYPE_CHECKING:
+    from app.models.version import ArtifactVersion
 
 
 class ValidationResult(UUIDPrimaryKeyMixin, Base):
@@ -24,15 +28,18 @@ class ValidationResult(UUIDPrimaryKeyMixin, Base):
         nullable=False,
         index=True,
     )
+    client_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("clients.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # ── Validation Info ───────────────────────────────────────
     category: Mapped[ValidationCategory] = mapped_column(
-        Enum(ValidationCategory, name="validation_category"),
+        Enum(ValidationCategory, name="validation_category", native_enum=False),
         nullable=False,
     )
 
     status: Mapped[ValidationStatus] = mapped_column(
-        Enum(ValidationStatus, name="validation_status"),
+        Enum(ValidationStatus, name="validation_status", native_enum=False),
         nullable=False,
     )
 

@@ -1,5 +1,5 @@
 """
-erpFusion — Deterministic Validation Engine
+HighStudio — Deterministic Validation Engine
 
 Performs automated, deterministic validation checks on generated artifacts
 before they are presented for human review.
@@ -64,7 +64,7 @@ class SchemaConformityValidator:
             tables_meta = erp_schema_context.get("entities", erp_schema_context.get("objects", []))
 
         def column_names(columns):
-            names = set()
+            names: set[str] = set()
             if not isinstance(columns, (list, tuple, set)):
                 return names
             for column in columns:

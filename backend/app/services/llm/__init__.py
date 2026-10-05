@@ -1,1 +1,1 @@
-"""erpFusion — LLM Services Package"""
+"""HighStudio — LLM Services Package"""

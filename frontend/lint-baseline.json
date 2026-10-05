@@ -1,0 +1,61 @@
+{
+  "captured_on": "2026-10-01",
+  "owner": "Frontend engineering",
+  "policy": "Only exact legacy warning fingerprints are accepted. New warnings fail. --prune-baseline can remove resolved entries but cannot add debt.",
+  "diagnostics": [
+    {
+      "file": "src/components/DiffViewer.jsx",
+      "code": "react(preserve-manual-memoization)",
+      "message": "Existing memoization could not be preserved",
+      "source_hash": "87693bb0fe9d9f51adc37d73a434e539b0cf935cf413df85df164e1644e4703e"
+    },
+    {
+      "file": "src/components/DiffViewer.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "2181552aa97fd06df99808bf33fab909f2ec2286c7dd4815d18d6d01bde0a083"
+    },
+    {
+      "file": "src/components/TraceabilityCard.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "f578f81376e265114714d06b0902f0b3123c598ac79b3c71e7ce471f4a57e1d9"
+    },
+    {
+      "file": "src/components/DeploymentPackageView.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "31e1011a12d2ef321a0264f358e90019d1c5c3aa07c62e728dfedb884e9ddd0d"
+    },
+    {
+      "file": "src/components/DeploymentPackageView.jsx",
+      "code": "eslint(no-control-regex)",
+      "message": "Unexpected control characters",
+      "source_hash": "c6a587a20c67833add469bd1b856c0b8242c2fa44f83584324a466b744dee4e4"
+    },
+    {
+      "file": "src/App.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "71188c16937435e17573b115c8e70feba912d68af3171073c06cfdd4b370b8fd"
+    },
+    {
+      "file": "src/App.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "1cebd680eb91c79db48684d1b689ef7317186b73707bbafaade39aa6142727db"
+    },
+    {
+      "file": "src/App.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "419df0bab68336e84cd2ef443132ff1e8a0c025220e0fa6114acee8547784c6f"
+    },
+    {
+      "file": "src/App.jsx",
+      "code": "react(set-state-in-effect)",
+      "message": "Calling setState synchronously within an effect can trigger cascading renders",
+      "source_hash": "472379ee265f014e881c7c6bd3cfb52e60ebce5b61d7f43ce3718a6368d7adc9"
+    }
+  ]
+}

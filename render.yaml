@@ -6,8 +6,10 @@ services:
     region: singapore
     rootDir: backend
     buildCommand: pip install .
-    preDeployCommand: alembic upgrade head
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    preDeployCommand: DATABASE_URL=$MIGRATION_DATABASE_URL alembic upgrade head
+    # The disk is available only at runtime. Provision storage outside the app lifecycle.
+    startCommand: mkdir -p /var/data/artifacts && exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health/ready
     disk:
       name: erpfusion-assets
       mountPath: /var/data
@@ -17,9 +19,13 @@ services:
         value: production
       - key: LOG_LEVEL
         value: INFO
+      - key: DEMO_MODE
+        value: false
       - key: ARTIFACT_STORAGE_PATH
         value: /var/data/artifacts
       - key: DATABASE_URL
+        sync: false
+      - key: MIGRATION_DATABASE_URL
         fromDatabase:
           name: erpfusion-db
           property: connectionString
@@ -29,7 +35,13 @@ services:
         value: openai/gpt-oss-120b
       - key: GROQ_API_KEY
         sync: false
-      - key: ERP_ADMIN_API_KEY
+      - key: AUTH_MODE
+        value: oidc
+      - key: OIDC_ISSUER
+        sync: false
+      - key: OIDC_AUDIENCE
+        sync: false
+      - key: OIDC_JWKS_URL
         sync: false
       - key: CORS_ORIGINS
         sync: false

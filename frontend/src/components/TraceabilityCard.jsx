@@ -1,30 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Network, CheckCircle, XCircle, RefreshCw, ShieldCheck } from 'lucide-react';
-import { apiUrl } from '../api';
+import { useApiResource } from '../hooks/useApiResource';
 
 export default function TraceabilityCard({ projectId }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadTraceability = useCallback(async () => {
-    if (!projectId) return;
-    setLoading(true);
-    try {
-      const res = await fetch(apiUrl(`/api/projects/${projectId}/traceability`));
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-      }
-    } catch (e) {
-      console.error('Failed to load traceability matrix', e);
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
-
-  useEffect(() => {
-    loadTraceability();
-  }, [loadTraceability]);
+  const { data, loading, error, reload } = useApiResource(projectId ? `/api/projects/${projectId}/traceability` : null);
 
   return (
     <div className="hr-card" style={{ margin: '16px 24px', padding: '20px 24px' }}>
@@ -68,7 +47,7 @@ export default function TraceabilityCard({ projectId }) {
             </span>
           )}
           <button
-            onClick={loadTraceability}
+            onClick={reload}
             disabled={loading}
             className="btn btn-secondary"
             style={{ padding: '5px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -85,7 +64,7 @@ export default function TraceabilityCard({ projectId }) {
           <RefreshCw size={20} className="spin" color="var(--hr-orange)" />
           <span style={{ fontSize: '13px' }}>Loading configured stage lineage…</span>
         </div>
-      ) : data?.kind === 'WORKFLOW' && data.matrix?.length > 0 ? (
+      ) : error ? <div role="alert" style={{ padding: 24, color: '#991b1b' }}>{error}</div> : data?.kind === 'WORKFLOW' && data.matrix?.length > 0 ? (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', textAlign: 'left' }}>
             <thead><tr style={{ borderBottom: '1px solid #cbd5e1', background: '#f8fafc', color: '#475569' }}>

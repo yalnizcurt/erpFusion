@@ -1,5 +1,13 @@
 # ERP capability qualification
 
+## Evaluate the selected pattern
+
+The published pattern version pins the ERP intelligence, approved baseline versions,
+runtime/deliverable, required/optional capabilities and qualification strategy. API and file
+patterns do not inherit universal native installation requirements. Match installed adapter
+contracts to the requested operation; catalogue names/runtime values do not install adapters.
+See [pattern architecture](../../../../docs/architecture/highstudio-integration-patterns.md).
+
 ## Evaluate operations separately
 
 For a requested ERP/edition/version/environment, identify the following evidence:
@@ -29,7 +37,7 @@ existing report is narrower than installation of a generated candidate.
   can use newly configured intelligence without adding an ERP-name source branch.
   This establishes framework behavior, not vendor-native package execution.
 - Oracle compatibility generation/validators and the Fusion Publisher protocol
-  exist; their native import/Studio automatic execution qualification is incomplete.
+  exist; their existing-report execution has an approved attempt path; native import/readback and live qualification remain incomplete.
 - [Demo ERP browser acceptance](../../../../frontend/e2e-fullstack/onboarding.spec.ts)
   exercises UI-created configuration against the real API/compiler/worker with a
   mock model. It is not live ERP or full package-installation evidence.
